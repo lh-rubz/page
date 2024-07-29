@@ -1,0 +1,31 @@
+body {
+	background-color: #36517c;
+}
+.header {
+	display: flex;
+	align-items: center;
+
+	height: 100px;
+}
+.navBar {
+	margin-left: 5%;
+}
+.navBar li {
+	border: 2px solid white;
+	display: inline-block;
+	float: left;
+	list-style: none;
+	margin-right: 40px;
+	margin-left: 40px;
+}
+.navBar li a {
+	padding: 10px;
+	color: white;
+	font-weight: bold;
+	text-decoration: none;
+}
+#logo {
+	height: 200px;
+	width: 200px;
+	float: left;
+}
