@@ -2,6 +2,10 @@
 publish = "page"
 
 
+[[redirects]]
+from = "/task2"
+to = "/task2.html"
+status = 200
 
 [[redirects]]
 from = "/*"
