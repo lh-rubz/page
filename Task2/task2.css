@@ -16,18 +16,6 @@ body {
 	font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
 }
 
-@media only screen and (max-width: 1400px) {
-	.side {
-		display: none;
-	}
-	.main {
-		width: 133.33%;
-	}
-	.text {
-		background-color: transparent;
-	}
-}
-
 .header {
 	grid-area: header;
 	display: flex;
@@ -105,7 +93,6 @@ body {
 }
 
 .navBar li:hover {
-	font-size: 22px;
 	box-shadow: 4px 2px 10px var(--textColor);
 }
 
@@ -196,20 +183,25 @@ body {
 #location,
 #offShore,
 #form {
-	width: 20%;
+	max-width: 20%;
 	height: 100%;
 	display: flex;
 	padding: 20px 0;
 	flex-direction: column;
-	justify-content: flex-start;
+	justify-content: center;
 }
 #offShore a {
 	text-decoration: none;
 }
+
 #form input,
-#form button {
+#form button,
+textarea {
 	width: 90%;
 	border-radius: 5px;
+}
+#form input,
+#form button {
 	height: 10%;
 }
 #form input,
@@ -221,7 +213,10 @@ textarea {
 .image {
 	flex: auto;
 }
-
+textarea {
+	max-width: 90%;
+	max-height: 160px;
+}
 .footer h4 {
 	color: white;
 }
@@ -255,5 +250,16 @@ textarea {
 	}
 	100% {
 		background-image: url("images/img1.png");
+	}
+}
+@media only screen and (max-width: 1400px) {
+	.side {
+		display: none;
+	}
+	.main {
+		width: 133.33%;
+	}
+	.text {
+		background-color: transparent;
 	}
 }
