@@ -232,11 +232,6 @@ button {
 	text-shadow: none;
 	border-radius: 5px;
 }
-#form input:focus,
-textarea:focus {
-	background-color: rgb(155, 151, 151);
-	color: white;
-}
 
 .image {
 	flex: auto;
@@ -293,5 +288,8 @@ textarea:focus {
 	}
 	.text {
 		background-color: transparent;
+	}
+	.header {
+		padding: 15px 0;
 	}
 }
