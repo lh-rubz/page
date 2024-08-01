@@ -1,0 +1,9 @@
+[build]
+publish = "page"
+
+
+
+[[redirects]]
+from = "/*"
+to = "/task2.html"
+status = 200
