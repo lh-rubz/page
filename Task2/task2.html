@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Exalt Technologies</title>
+  <link rel="icon" type="image/x-icon" href="images/icon.png" />
+  <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
+  <link rel="stylesheet" href="task2.css" />
+</head>
+<body>
+  <div class="container">
+    <header class="header">
+      <img id="logo" src="images/logo.svg" />
+      <nav>
+        <ul class="navBar">
+          <li><a href="#">Home</a></li>
+          <li><a href="#">About</a></li>
+          <li><a href="#">Services</a></li>
+          <li class="dropItem">
+            <a href="#">Links</a>
+            <span class="dropDownList" style="color: wheat">
+              <a href="#">Link1</a>
+              <a href="#">Link2</a>
+              <a href="#">Link3</a>
+            </span>
+          </li>
+          <li><a href="#">Contact</a></li>
+          <li><a href="#">Log in</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <aside class="sidebar" data-aos="flip-left">
+      <img src="images/choose-topic.png" />
+      <h3>Choose a topic.</h3>
+      <ul class="topics">
+        <li><a href="#img">Image</a></li>
+        <li><a href="#clients">our Clients</a></li>
+        <li><a href="#howPart">How we Do it</a></li>
+        <li><a href="#footer">Contact us</a></li>
+      </ul>
+    </aside>
+
+    <main class="mainbody">
+      <div class="imgContainer">
+        <div id="img" data-aos="slide-right">
+          The perfect choice for any
+          <div class="changingWords">
+            <span>Developer &#128187</span>
+            <span>Coffee Lover &#9749</span>
+            <span>Creative &#129321</span>
+            <span>Maker &#128295</span>
+            <span>Creator &#128161</span>
+          </div>
+        </div>
+      </div>
+
+      <div data-aos="fade-up" class="clients" id="clients">
+        <span class="topic">Our Clients</span>
+       
+        <div><img src="images/cisco_c.svg" alt="Cisco" /></div>
+        <div><img src="images/indigo_c.svg" alt="Indigo" /></div>
+        <div><img src="images/nokia_c.svg" alt="Nokia" /></div>
+        <div><img src="images/ruckus_c.svg" alt="Ruckus" /></div>
+        <div><img src="images/frontline_c.svg" alt="Frontline" /></div>
+        <div><img src="images/qwilt_c.svg" alt="Qwilt" /></div>
+        <div><img src="images/broadsay_c.svg" alt="Broadsay" /></div>
+        <div><img src="images/cato_c.svg" alt="Cato" /></div>
+        <div><img src="images/offerDrop_c.svg" alt="OfferDrop" /></div>
+        <div><img src="images/genesys.svg" alt="Genesys" /></div>
+        <div><img src="images/alcatel_c.svg" alt="Alcatel" /></div></div>
+      
+
+      <div class="howPart" id="howPart">
+        <span class="topic">How We Do It</span>
+        <div class="container">
+          <div class="answerBox">
+            <img src="images/ideas_icon.svg" alt="Ideas" />
+            <span>
+              <span class="answerTopic">Ideas</span>
+              <span class="answer">EXALT turns your ideas into world-class innovations.</span>
+            </span>
+          </div>
+          <div class="answerBox">
+            <img src="images/innovations_icon.svg" alt="Innovations" />
+            <span>
+              <span class="answerTopic">Innovations</span>
+              <span class="answer">World-class software engineers who work in globalized teams.</span>
+            </span>
+          </div>
+          <div class="answerBox">
+            <img src="images/scrum_icon.svg" alt="Scrum Team" />
+            <span>
+              <span class="answerTopic">Scrum Team</span>
+              <span class="answer">Your EXALT specialized scrum teams can integrate or work independently.</span>
+            </span>
+          </div>
+          <div class="answerBox">
+            <img src="images/product_icon.svg" alt="Product Development" />
+            <span>
+              <span class="answerTopic">Product Development</span>
+              <span class="answer">We Design, Develop, Test & Deliver your product solution on schedule and within budget.</span>
+            </span>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <footer class="footer" id="footer">
+      <div class="info">
+        <div id="location">
+          <h4 style="color: #619bb9;">United States</h4>
+          <h5>
+            7420 <span style="text-transform: uppercase">Trindale Trce Cumming, GA</span> 30041-8320 United States <br />
+            Cellular: (650) 576 2619 <br />
+            Telephone: (650) 587 8786
+          </h5>
+        </div>
+
+        <div id="offShore">
+          <h4 style="color: #619bb9 ;">Off Shore</h4>
+          <h5 style="text-transform: capitalize">
+            26 Naji Al-Ali Street, Al-Massyoun Heights PO Box 1133, Ramallah, W603, Palestine <br />
+            Telephone: (+972) 2 296 5740
+          </h5>
+          <br />
+          <span>
+            <a href="https://www.facebook.com/EXALT.Technologies/" target="_blank">
+              <img src="images/facebook.svg" alt="Facebook" />
+            </a>
+            <a href="https://www.linkedin.com/company/exalt-technologies/" target="_blank">
+              <img src="images/assets_linkdin.svg" alt="LinkedIn" />
+            </a>
+          </span>
+        </div>
+        <div id="form">
+          <input type="text" placeholder="Your name" />
+          <input type="email" placeholder="Email" />
+          <textarea placeholder="Text"></textarea>
+          <button style="cursor: pointer">Send</button>
+        </div>
+      </div>
+    </footer>
+  </div>
+  
+  <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
+  <script>
+    AOS.init();
+  </script>
+</body>
+</html>
