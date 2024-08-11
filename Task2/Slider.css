@@ -28,7 +28,7 @@ div > div:hover {
 	background-color: rgb(59, 238, 59);
 }
 div > div > img {
-	height: 40px;
+	height: 30px;
 }
 #rightArrow {
 	transform: rotate(180deg);
