@@ -6,7 +6,10 @@ publish = "Task2"
 from = "/task2"
 to = "/task2.html"
 status = 200
-
+[[redirects]]
+from = "/slider"
+to = "/Slider.html"
+status = 200
 [[redirects]]
 from = "/*"
 to = "/task2.html"
