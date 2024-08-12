@@ -10,6 +10,7 @@ body {
 	background-color: #faebd7;
 }
 #container {
+	position: relative;
 	background-color: #d3d3d3;
 	height: fit-content;
 	padding: 20px;
@@ -18,8 +19,6 @@ body {
 	box-shadow: 0 4px 8px #c9cdcb;
 	grid-template-columns: auto auto;
 	row-gap: 3px;
-	width: 25%;
-	box-sizing: border-box;
 }
 .input-group {
 	margin-bottom: 10px;
@@ -72,5 +71,7 @@ button:hover {
 	margin-top: 15px;
 	border-radius: 15px;
 	box-sizing: border-box;
-	width: 25%;
+	position: absolute;
+	top: 100%;
+	width: 100%;
 }
