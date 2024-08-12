@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<link rel="stylesheet" href="caculator.css" />
+		<link rel="icon" type="image/x-icon" href="assets/calculator.png" />
+		<script src="caculator.js" defer></script>
+		<title>Calculator</title>
+	</head>
+	<body>
+		<div id="container">
+			<div class="input-group">
+				<label for="num1">Num1</label>
+				<input id="num1" type="text" class="inputs" />
+			</div>
+			<div class="input-group">
+				<label for="num2">Num2</label>
+				<input id="num2" type="text" class="inputs" />
+			</div>
+
+			<span class="operators">
+				<label>
+					<input type="radio" value="+" name="operators" checked />
+					+ </label
+				><label
+					><input type="radio" value="-" name="operators" /> -
+				</label></span
+			><span class="operators"
+				><label
+					><input type="radio" value="/" name="operators" /> ÷ </label
+				><label
+					><input type="radio" value="*" name="operators" /> *
+				</label>
+			</span>
+			<div id="outputBox">
+				<button id="calc" onclick="calc()">Calc</button>
+				<input type="text" readonly id="result" />
+			</div>
+			<button id="clear" onclick="clearMethod()">clear</button>
+			<div id="errorMsg"></div>
+		</div>
+	</body>
+</html>
