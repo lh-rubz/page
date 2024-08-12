@@ -13,10 +13,10 @@ body {
 	height: inherit;
 	background-color: white;
 	font-family: "Satoshi-Regular", Helvetica, Arial, sans-serif;
-	min-height: 100vh;
+	max-height: 100vh;
 }
 .container {
-	min-height: 100vh;
+	height: inherit;
 	display: grid;
 	grid-template-rows: 0.1fr 1fr 0.1fr;
 	grid-template-columns: 1fr; /* Single column by default */
@@ -160,7 +160,8 @@ body {
 	background-color: #ffffff;
 	padding: 10px;
 
-	overflow: visible;
+	overflow-y: auto;
+	overflow-x: hidden;
 }
 .mainbody .imgContainer {
 	flex: 1;
@@ -262,9 +263,9 @@ body {
 
 	justify-content: center;
 	align-items: center;
-	width: 20%;
+
 	position: relative;
-	margin: 0 10px;
+	margin-left: 20%;
 }
 .answerBox img {
 	max-height: 100px;
@@ -275,15 +276,14 @@ body {
 	display: flex;
 	flex-direction: column;
 	background-image: url(images/cool-background.png);
-	height: min-content;
+	height: 70%;
 	background-repeat: no-repeat;
 	background-size: cover;
 }
 
-.howPart .container {
-	transform: translateY(-30%);
-	display: inline-flex;
-	flex-wrap: wrap;
+.howPart .container2 {
+	display: grid;
+	grid-template-columns: auto auto;
 
 	justify-content: center;
 	align-items: center;
@@ -292,7 +292,7 @@ body {
 	font-size: 20px;
 	display: block;
 	font-weight: bold;
-	margin-bottom: 7px;
+	margin: 10px 0;
 }
 .answerBox > span {
 	font-size: 17px;
@@ -302,7 +302,7 @@ body {
 
 .footer {
 	padding: 5px;
-
+	box-sizing: border-box;
 	grid-area: footer;
 	background-color: #333;
 	color: white;
@@ -310,12 +310,8 @@ body {
 	position: fixed;
 	bottom: 0;
 	width: 100%;
-	display: flex;
-	align-items: center;
-	flex-direction: column;
-	text-align: center;
-	justify-content: space-between;
-	flex-wrap: nowrap;
+	max-height: 20%;
+	overflow-y: auto;
 }
 .footer .info {
 	display: flex;
@@ -324,41 +320,47 @@ body {
 	/* padding: 5px; */
 	flex-wrap: wrap;
 }
+/* the facebook and linkedln icons*/
 .footer #offShore > span > a {
 	padding: 0 3px;
 }
 #form button {
-	width: 300px;
+	max-width: 300px;
 	margin: 0;
 	padding: 5px;
 	border: 1px solid #8b9498;
 	font-family: Roboto;
 	font-weight: 300;
-	font-size: 15px;
+	font-size: 10px;
 	background-color: #80afc7;
 	color: #fff;
 	text-shadow: none;
 	border-radius: 5px;
-	transition: background-color 1.5s;
+	transition: background-color 1s;
 }
 #form button:hover {
 	background-color: #5796b5;
 }
 #form textarea {
 	max-height: 100px;
+
 	min-height: 100px;
 	resize: none;
 	background-color: transparent !important;
 	color: #8b9498;
 }
+#location {
+	transform: translate(0, -17%);
+}
 #location,
 #offShore,
 #form {
-	flex-shrink: 1;
-	max-width: 30%;
+	max-width: 20%;
+	min-width: 5%;
+	font-size: small;
 	display: flex;
-	padding: 10px;
-	margin: 10px 30px;
+	padding: 5px;
+	max-height: 90%;
 	line-height: 1.5;
 	flex-direction: column;
 	justify-content: center;
@@ -366,26 +368,34 @@ body {
 #offShore a {
 	text-decoration: none;
 }
-
+#form textarea {
+	max-height: 10px;
+}
 #form input,
 #form textarea {
 	flex-shrink: 1;
 	margin-bottom: 5px;
 	border-radius: 5px;
 	padding: 5px;
-	width: 300px;
+	max-width: 300px;
 	background-color: transparent !important;
 	color: #8b9498;
 	border: 1px solid #8b9498;
 	font-family: Roboto;
 	font-weight: 300;
 	font-size: 15px;
-	padding: 7px;
+	padding: 3px;
 }
+
 #form input,
 button {
 	height: 8%;
 	max-height: 10%;
+}
+#form input,
+#form textarea,
+#form button {
+	max-height: fit-content;
 }
 /* Media query for larger screens */
 @media (min-width: 1400px) {
@@ -416,16 +426,21 @@ button {
 	}
 	.footer {
 		position: relative;
+		max-height: 100%;
 	}
 	#location,
 	#offShore,
 	#form {
 		margin: 10px 80px;
+		font-size: large;
 	}
 	.answerBox {
 		width: 40%;
 	}
-	.howPart .container {
-		transform: translateY(-10%);
+	#form input,
+	#form textarea,
+	#form button {
+		padding: 7px;
+		font-size: 15px;
 	}
 }
