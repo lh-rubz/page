@@ -16,7 +16,7 @@ body {
 	background-size: cover;
 }
 
-div > div {
+.arrow {
 	position: absolute;
 	top: 50%;
 	height: 50px;
@@ -24,17 +24,17 @@ div > div {
 	justify-content: center;
 	align-items: center;
 }
-div > div:hover {
+.arrow:hover {
 	background-color: rgb(59, 238, 59);
 }
-div > div > img {
+.arrow > img {
 	height: 30px;
 }
-#rightArrow {
+#right {
 	transform: rotate(180deg);
 	right: 0;
 }
-#leftArrow {
+#left {
 	left: 0;
 }
 #pageInfo {
