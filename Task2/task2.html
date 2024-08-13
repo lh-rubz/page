@@ -7,6 +7,24 @@
   <link rel="icon" type="image/x-icon" href="images/icon.png" />
   <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
   <link rel="stylesheet" href="task2.css" />
+
+<style>
+    @keyframes appear{
+        from{
+            opacity: 0;
+           transform: translateX(-60px);}
+        to{
+            opacity: 1;
+           transform: translateX(40px);
+        }
+
+    }
+    #clients{
+    animation: appear  linear;
+    animation-timeline: view();
+    animation-range:entry 0% cover 40%;
+}
+</style>
 </head>
 <body>
   <div class="container">
@@ -45,7 +63,7 @@
     <main class="mainbody">
       <div class="imgContainer">
         <div id="img" data-aos="slide-right">
-          The perfect choice for any
+          <h5>The perfect choice for any</h5>
           <div class="changingWords">
             <span>Developer &#128187</span>
             <span>Coffee Lover &#9749</span>
@@ -56,7 +74,9 @@
         </div>
       </div>
 
-      <div class="clients" id="clients">
+      <div 
+      
+      class="clients" id="clients">
         <span class="topic">Our Clients</span>
        
         <div><img src="images/cisco_c.svg" alt="Cisco" /></div>
