@@ -18,7 +18,7 @@
           <li><a href="#">About</a></li>
           <li><a href="#">Services</a></li>
           <li class="dropItem">
-            <a href="#">Tasks</a>
+            <a href="#" id="tasksLink">Tasks</a>
             <span class="dropDownList" style="color: wheat">
               <a href="slider/slider.html">Task1</a>
               <a href="calculator/calculator.html">Task2</a>
@@ -56,7 +56,7 @@
         </div>
       </div>
 
-      <div data-aos="fade-up" class="clients" id="clients">
+      <div class="clients" id="clients">
         <span class="topic">Our Clients</span>
        
         <div><img src="images/cisco_c.svg" alt="Cisco" /></div>
@@ -143,7 +143,36 @@
       </div>
     </footer>
   </div>
-  
+  <script>const nav = document.querySelector('.header nav');
+    const logo = document.getElementById("logo");
+    
+    function handleNavDisplay() {
+        const isSmallScreen = window.matchMedia("(max-width: 600px)").matches;
+        
+        if (isSmallScreen) {
+            nav.style.display='none';
+            //when clicked if the list is shown hide else do the opposite
+            logo.onclick = function() {
+                if (nav.style.display === 'none' ) {
+                    nav.style.display = 'block';
+                } else {
+                    nav.style.display = 'none';
+                }
+            };
+        } else {
+            // For larger screens, ensure nav is always visible
+            nav.style.display = 'flex'; 
+            logo.onclick = null; // Remove the click event listener for larger screens
+        }
+    }
+    
+    
+    handleNavDisplay();
+    
+    //recheck when resizing
+    window.addEventListener('resize', handleNavDisplay);
+    
+  </script>
   <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
   <script>
     AOS.init();
