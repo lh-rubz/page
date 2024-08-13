@@ -504,6 +504,7 @@ button {
 	.clients > div {
 		width: 30%;
 		height: auto;
+		transform: translate(-20%);
 	}
 	.answerBox {
 		flex-direction: column;
