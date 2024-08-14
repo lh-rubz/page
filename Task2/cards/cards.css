@@ -1,3 +1,253 @@
+:root {
+	--lightPink: #ff759f;
+	--darkPink: #e75480;
+}
 body {
+	display: flex;
+	flex-direction: column;
 	height: auto;
+	background-color: #171717;
+	font-family: Arial, Helvetica, sans-serif;
+	position: relative;
+}
+
+.container {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	padding: 10px;
+	box-sizing: border-box;
+	position: relative;
+	margin: 20px;
+}
+.container::before {
+	content: "";
+	position: absolute;
+	background-color: rgb(58, 57, 57);
+	width: 100%;
+	height: 100%;
+	border-radius: 15px;
+	filter: blur(5px);
+}
+.card {
+	position: relative;
+	display: flex;
+	margin: 10px;
+	align-items: center;
+	justify-content: center;
+	max-width: 200px;
+	width: 100%;
+	min-width: 200px;
+	border-radius: 24px;
+	line-height: 1.5;
+	transition: all 0.48s;
+}
+
+.content {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	padding: 15px;
+	border-radius: 10px;
+	color: white;
+	overflow: hidden;
+	background: rgb(32, 178, 117);
+	transition: all 0.48s;
+}
+
+.content::before {
+	width: 80%;
+	height: 80%;
+	z-index: -1;
+}
+.content::after {
+	width: 80%;
+	height: 80%;
+	z-index: -2;
+}
+
+.content::after,
+.content::before {
+	position: absolute;
+	content: "";
+	top: -2%;
+	left: 50%;
+	transform: translate(-50%);
+	background: var(--lightPink);
+	opacity: 0.2;
+	transform-origin: bottom;
+	border-radius: inherit;
+	transition: all 0.48s;
+}
+
+.content h1 {
+	width: 100%;
+	text-align: center;
+}
+
+.content .para {
+	z-index: 1;
+	opacity: 1;
+	transition: all 0.48s;
+	width: 100%;
+	min-height: 100px;
+	scrollbar-width: thin;
+	scrollbar-color: var(--lightPink) var(--darkPink);
+	resize: none;
+	margin: 5px auto;
+	scrollbar-darkshadow-color: #171717;
+	border-radius: 5px;
+	overflow: auto;
+	font-family: "Times New Roman", Times, serif;
+}
+
+.card:hover {
+	transform: translateY(-10px);
+}
+
+.card:hover .content::before {
+	rotate: -6deg;
+}
+.card:hover .content::after,
+.card:hover .content::before {
+	top: 0;
+	width: 100%;
+	height: 100%;
+}
+.card:hover .content::after {
+	rotate: 6deg;
+}
+.buttons {
+	cursor: pointer;
+	height: 20px;
+	width: 20px;
+	background-repeat: no-repeat;
+	background-position: center;
+	background-size: cover;
+	margin: 3px;
+	transition: all 0.2s;
+}
+
+.buttons:hover {
+	opacity: 0.7;
+}
+.button-container {
+	display: flex;
+	width: 100%;
+	justify-content: flex-end;
+}
+.outer {
+	position: absolute;
+	bottom: 0;
+	right: 0;
+}
+
+/* Popup styles */
+.popup {
+	display: none;
+	position: fixed;
+	z-index: 3;
+	left: 0;
+	top: 0;
+	width: 100%;
+	height: 100%;
+	overflow: auto;
+	background-color: rgba(0, 0, 0, 0.4);
+	opacity: 0;
+	transition: opacity 0.5s ease;
+}
+
+@keyframes popUp {
+	from {
+		transform: translateY(100%);
+		opacity: 0;
+	}
+	to {
+		transform: translateY(0);
+		opacity: 1;
+	}
+}
+
+.popup.show {
+	display: block;
+	animation: popUp 0.5s ease forwards;
+}
+#titleInput:focus,
+#idInput:focus {
+	outline: none;
+	border: 2px solid var(--lightPink);
+	border-radius: 5px;
+}
+.popup-content {
+	background-color: var(--lightPink);
+	margin: 25% auto;
+	padding: 20px;
+	border: 1px solid var(--darkPink);
+	width: 80%;
+	transform: translateY(-50px);
+	transition: transform 0.3s ease;
+	border-radius: 20px;
+}
+
+.close-btn {
+	color: white;
+	float: right;
+	font-size: 28px;
+	font-weight: bold;
+	cursor: pointer;
+}
+
+.close-btn:hover {
+	color: #e75480;
+	text-decoration: none;
+}
+
+#doneBtn,
+#confirmUpdateBtn,
+#cancelUpdateBtn,
+#confirmDeleteBtn,
+#cancelDeleteBtn {
+	background-color: white;
+	border-color: transparent;
+	border-radius: 10px;
+	color: #e75480;
+	font-weight: bold;
+}
+
+#doneBtn:hover,
+#confirmUpdateBtn:hover,
+#cancelUpdateBtn:hover,
+#confirmDeleteBtn:hover,
+#cancelDeleteBtn:hover {
+	background-color: #ff759f;
+	color: white;
+	border-color: white;
+}
+
+@media (max-width: 600px) {
+	.card {
+		max-width: 150px;
+	}
+
+	.content {
+		padding: 10px;
+	}
+
+	.content .para {
+		font-size: 10px;
+	}
+}
+
+@media (min-width: 601px) and (max-width: 900px) {
+	.card {
+		max-width: 175px;
+	}
+
+	.content {
+		padding: 12px;
+	}
+
+	.content .para {
+		font-size: 11px;
+	}
 }
