@@ -1,6 +1,6 @@
 let users = []; // Array to store user objects
 let currentCardId = null; // To store the ID of the card being edited or deleted
-let currentUserId = 1;
+let currentUserId = null; // To store the ID of the user for the current operation
 
 // Function to fetch and process user data from JSON file
 function loadUserData() {
@@ -13,7 +13,17 @@ function loadUserData() {
 					addUser(cardData.userId);
 					user = findUserById(cardData.userId);
 				}
-				user.addCard(cardData.id, cardData.title, cardData.completed);
+				if (user) {
+					user.addCard(
+						cardData.id,
+						cardData.title,
+						cardData.completed
+					);
+				} else {
+					console.log(
+						`Failed to add card. User with ID ${cardData.userId} does not exist.`
+					);
+				}
 			});
 		})
 		.catch((error) => console.error("Error loading user data:", error));
@@ -29,32 +39,65 @@ function addUser(userId) {
 	const newUser = new User(userId);
 	users.push(newUser);
 
+	// Create user card container
+	const userCardContainer = document.getElementById("users-container");
+	const userCard = document.createElement("div");
+	userCard.className = "userCard";
+	userCard.id = `userCard-${newUser.userId}`;
+	userCardContainer.appendChild(userCard);
+
+	// Create image container
+	const imgContainer = document.createElement("div");
+	imgContainer.className = "userImg";
+	const randomImage = Math.ceil(Math.random() * 6); // Ensure this matches your image file naming convention
+	imgContainer.style.backgroundImage = `url("assets/pfp-${randomImage}.png")`;
+	userCard.appendChild(imgContainer);
+
+	// Create text container
+	const userTxt = document.createElement("div");
+	userTxt.className = "userTxt";
+	const link = document.createElement("a");
+	const viewCardsB = document.createElement("button");
+	viewCardsB.textContent = "View Cards";
+	viewCardsB.className = "viewCardsButton";
+	viewCardsB.id = `view-${userId}`;
+	link.appendChild(viewCardsB);
+	link.href = "#cards-container";
+	userTxt.appendChild(link);
+	userCard.appendChild(userTxt);
+
+	// Create container for cards
+	const cardsContainer = document.getElementById("cards-container");
 	const userContainer = document.createElement("div");
 	userContainer.className = "container";
 	userContainer.id = `cont-${newUser.userId}`;
-	document.body.appendChild(userContainer);
+	cardsContainer.appendChild(userContainer);
 
 	const btnContainer = document.createElement("div");
 	const addBtn = document.createElement("div");
 	btnContainer.className = "outer button-container";
-	addBtn.id = "addCard";
+	addBtn.className = "buttons";
+	addBtn.id = `addCard-${newUser.userId}`;
 	addBtn.style.backgroundImage = "url(assets/add_darkPink.png)";
 	addBtn.title = "Add Card";
-	addBtn.className = "buttons";
 	btnContainer.appendChild(addBtn);
 	userContainer.appendChild(btnContainer);
-	console.log(`User with ID ${userId} added successfully.`);
 }
 
 // Function to find a user by ID
 function findUserById(id) {
-	return users.find((user) => user.userId === id);
+	for (let user of users) {
+		if (user.userId == id) {
+			return user;
+		}
+	}
+	console.log(`User with ID ${id} not found.`);
+	return null;
 }
 
 class Card {
-	constructor(id, userId, title, completed = false) {
+	constructor(id, title, completed = false) {
 		this.id = id;
-		this.userId = userId;
 		this.title = title;
 		this.completed = completed;
 	}
@@ -69,14 +112,19 @@ class Card {
 }
 
 class User {
+	isCardIdTaken(cardId) {
+		const card = this.getCardById(cardId);
+		return card !== undefined && card !== null;
+	}
+
 	constructor(userId) {
 		this.userId = userId;
 		this.userCards = [];
 	}
 
 	addCard(id, title, completed = false) {
-		if (!this.getCardById(id)) {
-			const card = new Card(id, this.userId, title, completed);
+		if (!this.isCardIdTaken(id)) {
+			const card = new Card(id, title, completed);
 			this.userCards.push(card);
 
 			const cardContainer = document.createElement("div");
@@ -87,8 +135,7 @@ class User {
 			contentDiv.className = "content";
 
 			const titleElement = document.createElement("h3");
-			titleElement.id = `title-${this.userId}-${id}`;
-			titleElement.innerText = "Card ID: " + id;
+			titleElement.innerText = `Card ID: ${id}`;
 
 			const textarea = document.createElement("textarea");
 			textarea.className = "para";
@@ -101,17 +148,17 @@ class User {
 			checkbox.checked = completed;
 
 			const editButton = document.createElement("div");
+			editButton.className = "buttons";
 			editButton.id = `edit-${this.userId}-${id}`;
 			editButton.style.backgroundImage = "url('assets/edit_dark.png')";
 			editButton.title = "Edit";
-			editButton.className = "buttons";
 
 			const deleteButton = document.createElement("div");
+			deleteButton.className = "buttons";
 			deleteButton.id = `delete-${this.userId}-${id}`;
 			deleteButton.style.backgroundImage =
 				"url('assets/delete_dark.png')";
 			deleteButton.title = "Delete Card";
-			deleteButton.className = "buttons";
 
 			const buttonContainer = document.createElement("div");
 			buttonContainer.className = "inner button-container";
@@ -135,7 +182,7 @@ class User {
 	}
 
 	getCardById(cardId) {
-		return this.userCards.find((card) => card.id === cardId);
+		return this.userCards.find((card) => card.id == cardId);
 	}
 
 	removeCardById(cardId) {
@@ -152,11 +199,14 @@ class User {
 		const card = this.getCardById(cardId);
 		if (card) {
 			card.updateTitle(newTitle);
-			document.getElementById(
-				`title-${this.userId}-${cardId}`
-			).innerText = newTitle;
-			document.getElementById(`textarea-${this.userId}-${cardId}`).value =
-				newTitle;
+			document
+				.getElementById(`card-${this.userId}-${cardId}`)
+				.querySelector(".para").innerHTML = newTitle;
+			console.log(
+				document
+					.getElementById(`card-${this.userId}-${cardId}`)
+					.querySelector(".para").innerHTML
+			);
 		} else {
 			console.log(`Card with ID ${cardId} not found.`);
 		}
@@ -166,9 +216,10 @@ class User {
 		const card = this.getCardById(cardId);
 		if (card) {
 			card.updateCompleted(newCompletedStatus);
-			document.getElementById(
-				`ischecked-${this.userId}-${cardId}`
-			).checked = newCompletedStatus;
+			document
+				.getElementById(`card-${this.userId}-${cardId}`)
+				.querySelector("input[type='checkbox']").checked =
+				newCompletedStatus;
 		} else {
 			console.log(`Card with ID ${cardId} not found.`);
 		}
@@ -178,48 +229,25 @@ class User {
 // Fetch user data when the page loads
 document.addEventListener("DOMContentLoaded", loadUserData);
 
-// Open the form popup to add a card
-const addCardBtn = document.getElementById("addCard");
-if (addCardBtn) {
-	addCardBtn.addEventListener("click", () => {
-		document.getElementById("formPopup").classList.add("show");
-	});
-}
-
-// Close the form popup
-const closeFormBtn = document.getElementById("closeFormBtn");
-if (closeFormBtn) {
-	closeFormBtn.addEventListener("click", () => {
-		document.getElementById("formPopup").classList.remove("show");
-	});
-}
-
-// Handle form submission
-const doneBtn = document.getElementById("doneBtn");
-if (doneBtn) {
-	doneBtn.addEventListener("click", () => {
-		const id = document.getElementById("idInput").value.trim();
-		const title = document.getElementById("titleInput").value.trim();
-		const completed = document.getElementById("confirmCheckbox").checked;
-
-		if (id && title) {
-			const user = findUserById(currentUserId); // Replace with actual user ID
-			if (user) {
-				user.addCard(id, title, completed);
-			}
-		} else {
-			alert("ID and Title cannot be empty.");
-		}
-
-		document.getElementById("formPopup").classList.remove("show");
-	});
-}
-
-// Handle edit and delete button clicks
 document.body.addEventListener("click", (event) => {
-	if (event.target.className.includes("buttons")) {
-		const [action, userId, cardId] = event.target.id.split("-").slice(0, 3);
+	// Handle "viewCardsButton" click
+	if (event.target.classList.contains("viewCardsButton")) {
+		// Extract userId from the button ID
+		const buttonId = event.target.id;
+		const userId = buttonId.split("-")[1]; // Extract userId from the button ID
+		clearCards();
+		const userContainer = document.getElementById(`cont-${userId}`);
 
+		if (userContainer) {
+			userContainer.classList.add("show"); // Add the class "show" (without the dot)
+		} else {
+			console.log(`Container for user ID ${userId} not found.`);
+		}
+	} else if (event.target.classList.contains("buttons")) {
+		const [action, userId, cardId] = event.target.id.split("-");
+		console.log(
+			`Action: ${action}, User ID: ${userId}, Card ID: ${cardId}`
+		);
 		currentUserId = userId;
 		currentCardId = cardId;
 
@@ -227,77 +255,202 @@ document.body.addEventListener("click", (event) => {
 			document.getElementById("updatePopup").classList.add("show");
 		} else if (action === "delete") {
 			document.getElementById("deletePopup").classList.add("show");
+		} else if (action === "addCard") {
+			document.getElementById("formPopup").classList.add("show");
 		}
 	}
 });
 
+// Form submission for adding a new card
+document.getElementById("doneBtn").addEventListener("click", () => {
+	const idInputElement = document.getElementById("idInput");
+	const titleInputElement = document.getElementById("titleInput");
+	const id = idInputElement.value.trim();
+	const title = titleInputElement.value.trim();
+	const completed = document.getElementById("confirmCheckbox").checked;
+
+	console.log(
+		`Adding card with ID ${id}, Title: ${title}, Completed: ${completed}`
+	);
+
+	// Clear any previous custom validity messages
+	idInputElement.setCustomValidity("");
+	titleInputElement.setCustomValidity("");
+
+	let valid = true;
+
+	// Validate the ID and title fields
+	if (!id) {
+		idInputElement.setCustomValidity("Please fill in the ID.");
+		valid = false;
+	}
+
+	if (!title) {
+		titleInputElement.setCustomValidity("Please fill in the Title.");
+		valid = false;
+	}
+
+	if (!valid) {
+		idInputElement.reportValidity();
+		titleInputElement.reportValidity();
+		return; // Stop further processing if validation fails
+	}
+
+	// Check if the card ID is already taken
+	const user = findUserById(currentUserId);
+	if (user) {
+		if (user.isCardIdTaken(id)) {
+			idInputElement.setCustomValidity("Card ID already exists.");
+			idInputElement.reportValidity();
+			return; // Stop further processing if ID is taken
+		}
+
+		// Add the card if all validations pass
+		user.addCard(id, title, completed);
+	} else {
+		console.log(`User with ID ${currentUserId} not found.`);
+	}
+
+	// Hide the form popup
+	document.getElementById("formPopup").classList.remove("show");
+});
+
 // Close the delete confirmation popup
-const closeDeletePopupBtn = document.getElementById("closeDeletePopupBtn");
-if (closeDeletePopupBtn) {
-	closeDeletePopupBtn.addEventListener("click", () => {
-		document.getElementById("deletePopup").classList.remove("show");
-	});
-}
+document.getElementById("closeDeletePopupBtn").addEventListener("click", () => {
+	console.log("Closing delete confirmation popup.");
+	document.getElementById("deletePopup").classList.remove("show");
+});
 
 // Confirm deletion
-const confirmDeleteBtn = document.getElementById("confirmDeleteBtn");
-if (confirmDeleteBtn) {
-	confirmDeleteBtn.addEventListener("click", () => {
-		const user = findUserById(currentUserId);
-		if (user) {
-			user.removeCardById(currentCardId);
-		}
-		document.getElementById("deletePopup").classList.remove("show");
-	});
-}
+document.getElementById("confirmDeleteBtn").addEventListener("click", () => {
+	console.log(
+		`Confirming deletion of card with ID ${currentCardId} for user ${currentUserId}`
+	);
+	const user = findUserById(currentUserId);
+	if (user) {
+		user.removeCardById(currentCardId);
+	} else {
+		console.log(`User with ID ${currentUserId} not found.`);
+	}
+	document.getElementById("deletePopup").classList.remove("show");
+});
 
 // Cancel deletion
-const cancelDeleteBtn = document.getElementById("cancelDeleteBtn");
-if (cancelDeleteBtn) {
-	cancelDeleteBtn.addEventListener("click", () => {
-		document.getElementById("deletePopup").classList.remove("show");
-	});
-}
+document.getElementById("cancelDeleteBtn").addEventListener("click", () => {
+	console.log("Canceling deletion.");
+	document.getElementById("deletePopup").classList.remove("show");
+});
 
 // Close the update confirmation popup
-const closeUpdatePopupBtn = document.getElementById("closeUpdatePopupBtn");
-if (closeUpdatePopupBtn) {
-	closeUpdatePopupBtn.addEventListener("click", () => {
-		document.getElementById("updatePopup").classList.remove("show");
-	});
-}
+document.getElementById("closeUpdatePopupBtn").addEventListener("click", () => {
+	console.log("Closing update confirmation popup.");
+	document.getElementById("updatePopup").classList.remove("show");
+});
 
 // Confirm update
-const confirmUpdateBtn = document.getElementById("confirmUpdateBtn");
-if (confirmUpdateBtn) {
-	confirmUpdateBtn.addEventListener("click", () => {
-		const newTitle = document
-			.getElementById(`textarea-${currentUserId}-${currentCardId}`)
-			.value.trim();
-		const newCompleted = document.getElementById(
-			`ischecked-${currentUserId}-${currentCardId}`
-		).checked;
+document.getElementById("confirmUpdateBtn").addEventListener("click", () => {
+	const textareaId = `textarea-${currentUserId}-${currentCardId}`;
+	const checkboxId = `ischecked-${currentUserId}-${currentCardId}`;
 
-		const user = findUserById(currentUserId);
-		if (user) {
-			const card = user.getCardById(currentCardId);
-			if (card) {
-				if (card.title !== newTitle) {
-					user.updateCardTitle(currentCardId, newTitle);
-				}
-				if (card.completed !== newCompleted) {
-					user.updateCardCompleted(currentCardId, newCompleted);
-				}
+	console.log(`Textarea ID: ${textareaId}`);
+	console.log(`Checkbox ID: ${checkboxId}`);
+
+	const textareaElement = document.getElementById(textareaId);
+	const checkboxElement = document.getElementById(checkboxId);
+
+	if (!textareaElement) {
+		console.error(`Textarea element with ID ${textareaId} not found.`);
+		return;
+	}
+	if (!checkboxElement) {
+		console.error(`Checkbox element with ID ${checkboxId} not found.`);
+		return;
+	}
+
+	const newTitle = textareaElement.value.trim();
+	const newCompleted = checkboxElement.checked;
+
+	console.log(
+		`Updating card with ID ${currentCardId} for user ${currentUserId}. New Title: ${newTitle}, New Completed Status: ${newCompleted}`
+	);
+
+	const user = findUserById(currentUserId);
+	if (user) {
+		const card = user.getCardById(currentCardId);
+		if (card) {
+			if (card.title !== newTitle) {
+				user.updateCardTitle(currentCardId, newTitle);
 			}
+			if (card.completed !== newCompleted) {
+				user.updateCardCompleted(currentCardId, newCompleted);
+			}
+		} else {
+			console.log(
+				`Card with ID ${currentCardId} not found for user ${currentUserId}.`
+			);
 		}
-		document.getElementById("updatePopup").classList.remove("show");
-	});
-}
+	} else {
+		console.log(`User with ID ${currentUserId} not found.`);
+	}
+	document.getElementById("updatePopup").classList.remove("show");
+});
 
 // Cancel update
-const cancelUpdateBtn = document.getElementById("cancelUpdateBtn");
-if (cancelUpdateBtn) {
-	cancelUpdateBtn.addEventListener("click", () => {
-		document.getElementById("updatePopup").classList.remove("show");
+document.getElementById("cancelUpdateBtn").addEventListener("click", () => {
+	console.log("Canceling update.");
+	document.getElementById("updatePopup").classList.remove("show");
+});
+
+// Clear button event
+const clearBtn = document.getElementById("clear");
+
+clearBtn.addEventListener("click", clearCards);
+
+function clearCards() {
+	const allUserContainers = document.querySelectorAll(".container");
+	allUserContainers.forEach((container) => {
+		container.classList.remove("show");
 	});
 }
+
+// Function to save card data
+function saveCards() {
+	const data = [];
+
+	// Collect all card data from users
+	users.forEach((user) => {
+		user.userCards.forEach((card) => {
+			data.push({
+				userId: user.userId,
+				cardId: card.id,
+				title: card.title,
+				completed: card.completed,
+			});
+		});
+	});
+
+	// Post data to the server
+	fetch("/assets/myJson.txt", {
+		method: "POST",
+		headers: {
+			"Content-Type": "application/json",
+		},
+		body: JSON.stringify(data),
+	})
+		.then((response) => response.json())
+		.then((result) => {
+			if (result.success) {
+				alert("File saved successfully!");
+			} else {
+				alert("Failed to save the file.");
+			}
+		})
+		.catch((error) => {
+			console.error("Error:", error);
+			alert("An error occurred while saving the file.");
+		});
+}
+
+// Save button event listener
+const saveBtn = document.getElementById("save");
+saveBtn.addEventListener("click", saveCards);
