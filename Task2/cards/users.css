@@ -45,6 +45,7 @@
 	position: relative;
 	width: auto;
 	box-sizing: border-box;
+	overflow: hidden;
 }
 
 /* Image container inside the card */
@@ -89,17 +90,26 @@
 
 @media (max-width: 600px) {
 	.userCard {
-		width: calc(50% - 20px); /* Two cards per row */
+		width: calc(50% - 20px);
+		
+		
 	}
 	.users-container {
 		justify-content: center;
 	}
+	
 }
 
 @media (max-width: 300px) {
 	.userCard {
-		width: calc(100% - 20px); /* One card per row */
+		width: calc(100% - 20px);
+	
 	}
+	.userImg{
+		max-width: 220px;
+		min-width: none;
+	}
+	
 	.users-container {
 		justify-content: center;
 	}
