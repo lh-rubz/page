@@ -12,7 +12,6 @@
 	<body>
 		<div id="users-container" class="users-container">
 			<div id="mainBtns">
-				
 				<img src="assets/clear.png" id="clear" title="clear Cards" />
 			</div>
 		</div>
@@ -69,9 +68,20 @@
 			<div class="popup-content">
 				<span id="closeUpdatePopupBtn" class="close-btn">&times;</span>
 				<h2 style="color: white">Confirm Update</h2>
-				<p style="color: white">
-					Are you sure you want to update this item?
-				</p>
+				<div id="updateForm">
+					<div>
+						<label for="updateTA" style="color: white"
+							>Title:</label
+						>
+						<textarea id="updateTA"></textarea>
+					</div>
+					<div>
+						<label for="iscompleted" style="color: white"
+							>Completed:</label
+						>
+						<input type="checkbox" id="iscompleted" />
+					</div>
+				</div>
 				<button type="button" id="confirmUpdateBtn">Update</button>
 				<button type="button" id="cancelUpdateBtn">Cancel</button>
 			</div>

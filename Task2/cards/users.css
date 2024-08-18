@@ -87,29 +87,41 @@
 .userTxt button:hover {
 	opacity: 0.8;
 }
-
+#updatePopup #updateForm {
+	display: flex;
+	flex-direction: column;
+}
+#updateForm div {
+	display: flex;
+	justify-content: flex-start;
+	align-items: center;
+	margin: 10px;
+}
+#updateForm #updateTA {
+	resize: none;
+	margin-left: 9px;
+	overflow: auto;
+	border-radius: 5px;
+	min-height: 50px;
+}
 @media (max-width: 600px) {
 	.userCard {
 		width: calc(50% - 20px);
-		
-		
 	}
 	.users-container {
 		justify-content: center;
 	}
-	
 }
 
 @media (max-width: 300px) {
 	.userCard {
 		width: calc(100% - 20px);
-	
 	}
-	.userImg{
+	.userImg {
 		max-width: 220px;
 		min-width: none;
 	}
-	
+
 	.users-container {
 		justify-content: center;
 	}
