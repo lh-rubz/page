@@ -13,4 +13,4 @@ to = "/task2.html"
 status = 200
 
 [build]
-  functions = "netlify/functions"
+  functions = "server/functions"
