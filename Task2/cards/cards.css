@@ -145,8 +145,8 @@ body {
 }
 .outer {
 	position: absolute;
-	bottom: 0;
-	right: 0;
+	top: 20px;
+	right: 5px;
 }
 
 /* Popup styles */
@@ -231,17 +231,14 @@ body {
 	border-color: white;
 }
 
-@media (max-width: 600px )  {
+@media (max-width: 600px) {
 	.card {
 		max-width: 150px;
-		
-		
 	}
 	.card .content::after,
 	.card .content::before {
-	top:0;
+		top: 0;
 		width: 70%;
-		
 	}
 	.card:hover .content::after,
 	.card:hover .content::before {
@@ -252,13 +249,13 @@ body {
 	.content {
 		padding: 10px;
 	}
-.userImg{
-	min-width: 100px;
-}
+	.userImg {
+		min-width: 100px;
+	}
 	.content .para {
 		font-size: 10px;
 	}
-	.container{
+	.container {
 		justify-content: center;
 		align-items: center;
 	}
@@ -267,7 +264,6 @@ body {
 @media (min-width: 601px) and (max-width: 900px) {
 	.card {
 		max-width: 175px;
-	
 	}
 	.card:hover .content::after,
 	.card:hover .content::before {
@@ -282,7 +278,7 @@ body {
 	.content .para {
 		font-size: 11px;
 	}
-	.container{
+	.container {
 		justify-content: center;
 		align-items: center;
 	}

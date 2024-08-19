@@ -259,6 +259,8 @@ document.body.addEventListener("click", (event) => {
 		} else if (action === "delete") {
 			document.getElementById("deletePopup").classList.add("show");
 		} else if (action === "addCard") {
+			document.getElementById("titleInput").value = ""; // Clear the title input
+			document.getElementById("confirmCheckbox").checked = false; // Uncheck the checkbox
 			document.getElementById("formPopup").classList.add("show");
 		}
 	}
@@ -266,26 +268,13 @@ document.body.addEventListener("click", (event) => {
 
 // Form submission for adding a new card
 document.getElementById("doneBtn").addEventListener("click", () => {
-	const idInputElement = document.getElementById("idInput");
 	const titleInputElement = document.getElementById("titleInput");
-	const id = idInputElement.value.trim(); // Remove extra spaces
+	const id = reservedIDs[reservedIDs.length - 1] + 1;
 	const title = titleInputElement.value.trim();
 	const completed = document.getElementById("confirmCheckbox").checked;
 
 	// Clear any previous custom validity messages
-	idInputElement.setCustomValidity("");
 	titleInputElement.setCustomValidity("");
-
-	if (!id) {
-		idInputElement.setCustomValidity("Please fill in the ID.");
-		idInputElement.reportValidity();
-		return;
-	} else if (isCardIdTaken(id)) {
-		// Check if the card ID is already taken
-		idInputElement.setCustomValidity("Card ID already exists.");
-		idInputElement.reportValidity();
-		return;
-	}
 
 	if (!title) {
 		titleInputElement.setCustomValidity("Please fill in the Title.");
@@ -297,14 +286,11 @@ document.getElementById("doneBtn").addEventListener("click", () => {
 	const user = findUserById(currentUserId);
 	if (user) {
 		user.addCard(id, currentUserId, title, completed);
-
-		//POST request to add the card on the server
-		fetch("http://localhost:5500/cards", {
+		// POST request to add the card on the server
+		fetch(`http://localhost:5500/cards/user/${currentUserId}`, {
 			method: "POST",
 			body: JSON.stringify({
-				id: id,
 				title: title,
-				userId: currentUserId,
 				completed: completed,
 			}),
 			headers: {
@@ -312,12 +298,7 @@ document.getElementById("doneBtn").addEventListener("click", () => {
 			},
 		})
 			.then((response) => response.json())
-			.then((json) => {
-				console.log("Card added:", json);
-				idInputElement.value = "";
-				titleInputElement.value = "";
-				document.getElementById("confirmCheckbox").checked = false;
-			})
+			.then((json) => console.log("Card added:", json))
 			.catch((error) => console.error("Error adding card:", error));
 	} else {
 		console.log(`User with ID ${currentUserId} not found.`);
