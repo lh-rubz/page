@@ -11,3 +11,6 @@ status = 200
 from = "/*"
 to = "/task2.html"
 status = 200
+
+[build]
+  functions = "Task2/cards/server"

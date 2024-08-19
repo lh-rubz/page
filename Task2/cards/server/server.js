@@ -1,6 +1,7 @@
 const express = require("express");
 const app = express();
 const cors = require("cors");
+const serverless = require("serverless-http");
 app.use(cors());
 app.use(express.json());
 let dataStore = [
@@ -1280,6 +1281,7 @@ app.delete("/cards/:id", (req, res) => {
 	dataStore.splice(index, 1);
 	res.status(204).send();
 });
+module.exports.handler = serverless(app);
 app.listen(5500, () => {
 	console.log("listening on port 5500");
 });
