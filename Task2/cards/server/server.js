@@ -1210,18 +1210,20 @@ const findTasksByUserId = (userId) =>
 	dataStore.filter((task) => task.userId === userId);
 
 app.get("/", (req, res) => {
+	//gets all data
 	res.json(dataStore);
 });
 app.get("/cards", (req, res) => {
+	//gets all data
 	res.json(dataStore);
 });
-
+//gets a specific user by userId
 app.get("/cards/user/:userId", (req, res) => {
 	const userId = parseInt(req.params.userId, 10);
 	const tasks = findTasksByUserId(userId);
 	res.json(tasks);
 });
-// Get a specific task by ID
+// Get a specific card by ID
 app.get("/cards/:id", (req, res) => {
 	const id = parseInt(req.params.id, 10);
 	const task = findTaskById(id);
@@ -1230,7 +1232,8 @@ app.get("/cards/:id", (req, res) => {
 	} else {
 		res.status(404).json({ message: "Task not found" });
 	}
-}); // POST endpoint
+});
+// posts a new card
 app.post("/cards/user/:userId", (req, res) => {
 	const { userId } = req.params;
 	const { title, completed } = req.body;
@@ -1240,7 +1243,7 @@ app.post("/cards/user/:userId", (req, res) => {
 		});
 	}
 	const newTask = {
-		userId: parseInt(userId),
+		userId: parseInt(userId, 10),
 		id: dataStore.length ? dataStore[dataStore.length - 1].id + 1 : 1,
 		title,
 		completed,
@@ -1251,7 +1254,7 @@ app.post("/cards/user/:userId", (req, res) => {
 
 // Update an existing task
 app.put("/cards/:id", (req, res) => {
-	const id = parseInt(req.params.id, 10);
+	const id = parseInt(req.params.id, 10); //make the number in decimal
 	const { title, completed } = req.body;
 	const task = findTaskById(id);
 	debugger;
