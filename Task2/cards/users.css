@@ -1,0 +1,128 @@
+/* Container for all user cards */
+.users-container {
+	height: auto;
+	width: 100%;
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: flex-start;
+	align-items: center;
+	position: relative;
+	gap: 10px;
+}
+.users-container #mainBtns {
+	position: absolute;
+	bottom: 0;
+	right: 0;
+}
+#mainBtns #save,
+#mainBtns #clear {
+	max-height: 40px;
+	max-width: 40px;
+	margin: 0 3px;
+	cursor: pointer;
+}
+.users-container::after {
+	z-index: -3;
+	background-color: rgba(255, 255, 255, 0.4);
+	filter: blur(40%);
+	position: absolute;
+	height: 100%;
+	width: 100%;
+	top: 0;
+	content: "";
+	border-radius: 20px;
+}
+
+/* User card */
+.userCard {
+	display: flex;
+	flex-direction: column;
+	min-height: 200px;
+	background-color: rgba(255, 255, 255, 0.8);
+	border-radius: 10px;
+	margin: 10px;
+	padding: 10px;
+	position: relative;
+	width: auto;
+	box-sizing: border-box;
+	overflow: hidden;
+}
+
+/* Image container inside the card */
+.userImg {
+	width: 100%;
+	min-width: 150px;
+	min-height: 100px;
+	background-size: cover;
+
+	background-repeat: no-repeat;
+	background-position: center;
+
+	transition: filter 0.7s;
+}
+.userImg:hover {
+	filter: drop-shadow(5px 10px 4px grey);
+}
+
+/* Text container inside the card */
+.userTxt {
+	flex: 1;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+/* Button inside the text container */
+.userTxt button {
+	border: 0;
+	background-color: rgb(32, 178, 117);
+	border-radius: 5px;
+	color: white;
+	font-weight: bold;
+	padding: 8px 12px;
+	cursor: pointer;
+	transition: opacity 0.3s;
+}
+
+.userTxt button:hover {
+	opacity: 0.8;
+}
+#updatePopup #updateForm {
+	display: flex;
+	flex-direction: column;
+}
+#updateForm div {
+	display: flex;
+	justify-content: flex-start;
+	align-items: center;
+	margin: 10px;
+}
+#updateForm #updateTA {
+	resize: none;
+	margin-left: 9px;
+	overflow: auto;
+	border-radius: 5px;
+	min-height: 50px;
+}
+@media (max-width: 600px) {
+	.userCard {
+		width: calc(50% - 20px);
+	}
+	.users-container {
+		justify-content: center;
+	}
+}
+
+@media (max-width: 300px) {
+	.userCard {
+		width: calc(100% - 20px);
+	}
+	.userImg {
+		max-width: 220px;
+		min-width: none;
+	}
+
+	.users-container {
+		justify-content: center;
+	}
+}

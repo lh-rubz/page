@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Cards</title>
+		<link rel="icon" type="image/x-icon" href="assets/favIcon.png" />
+		<link rel="stylesheet" href="users.css" />
+		<link rel="stylesheet" href="cards.css" />
+		<script src="cards.js" defer></script>
+	</head>
+	<body>
+		<div id="users-container" class="users-container">
+			<div id="mainBtns">
+				<img src="assets/clear.png" id="clear" title="clear Cards" />
+			</div>
+		</div>
+		<div id="cards-container"></div>
+
+		<!-- pop up form -->
+		<div id="formPopup" class="popup">
+			<div class="popup-content">
+				<span id="closeFormBtn" class="close-btn">&times;</span>
+				<h2 style="color: white">Enter Details</h2>
+				<form id="myForm">
+					<label for="titleInput" style="color: white">Title:</label>
+					<input
+						type="text"
+						id="titleInput"
+						name="title"
+						required
+					/><br /><br />
+					<input
+						type="checkbox"
+						id="confirmCheckbox"
+						name="confirm"
+					/>
+					<label for="confirmCheckbox" style="color: white"
+						>Completed?</label
+					><br /><br />
+					<button type="button" id="doneBtn">Done</button>
+				</form>
+			</div>
+		</div>
+
+		<!-- Delete Confirmation Popup -->
+		<div id="deletePopup" class="popup">
+			<div class="popup-content">
+				<span id="closeDeletePopupBtn" class="close-btn">&times;</span>
+				<h2 style="color: white">Confirm Deletion</h2>
+				<p style="color: white">
+					Are you sure you want to delete this item?
+				</p>
+				<button type="button" id="confirmDeleteBtn">Delete</button>
+				<button type="button" id="cancelDeleteBtn">Cancel</button>
+			</div>
+		</div>
+
+		<!-- Update Confirmation Popup -->
+		<div id="updatePopup" class="popup">
+			<div class="popup-content">
+				<span id="closeUpdatePopupBtn" class="close-btn">&times;</span>
+				<h2 style="color: white">Confirm Update</h2>
+				<div id="updateForm">
+					<div>
+						<label for="updateTA" style="color: white"
+							>Title:</label
+						>
+						<textarea id="updateTA"></textarea>
+					</div>
+					<div>
+						<label for="iscompleted" style="color: white"
+							>Completed:</label
+						>
+						<input type="checkbox" id="iscompleted" />
+					</div>
+				</div>
+				<button type="button" id="confirmUpdateBtn">Update</button>
+				<button type="button" id="cancelUpdateBtn">Cancel</button>
+			</div>
+		</div>
+	</body>
+</html>
