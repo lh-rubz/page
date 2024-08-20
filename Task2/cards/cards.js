@@ -4,7 +4,7 @@ let currentUserId = null; // To store the ID of the user for the current operati
 var reservedIDs = [];
 
 function loadUserData() {
-	fetch("http://localhost:5500/")
+	fetch("https://cardsapi.netlify.app/.netlify/functions/api")
 		.then((response) => response.json())
 		.then((data) => {
 			data.forEach((cardData) => {
@@ -287,16 +287,19 @@ document.getElementById("doneBtn").addEventListener("click", () => {
 	if (user) {
 		user.addCard(id, currentUserId, title, completed);
 		// POST request to add the card on the server
-		fetch(`http://localhost:5500/cards/user/${currentUserId}`, {
-			method: "POST",
-			body: JSON.stringify({
-				title: title,
-				completed: completed,
-			}),
-			headers: {
-				"Content-Type": "application/json; charset=UTF-8",
-			},
-		})
+		fetch(
+			`https://cardsapi.netlify.app/.netlify/functions/api/${currentUserId}`,
+			{
+				method: "POST",
+				body: JSON.stringify({
+					title: title,
+					completed: completed,
+				}),
+				headers: {
+					"Content-Type": "application/json; charset=UTF-8",
+				},
+			}
+		)
 			.then((response) => response.json())
 			.then((json) => console.log("Card added:", json))
 			.catch((error) => console.error("Error adding card:", error));
@@ -322,9 +325,12 @@ document.getElementById("confirmDeleteBtn").addEventListener("click", () => {
 	const user = findUserById(currentUserId);
 	if (user) {
 		user.removeCardById(currentCardId);
-		fetch(`http://localhost:5500/cards/${currentCardId}`, {
-			method: "DELETE",
-		})
+		fetch(
+			`https://cardsapi.netlify.app/.netlify/functions/api/${currentCardId}`,
+			{
+				method: "DELETE",
+			}
+		)
 			.then(() => console.log("Card deleted"))
 			.catch((error) => console.error("Error deleting card:", error));
 	} else {
@@ -376,18 +382,21 @@ document.getElementById("confirmUpdateBtn").addEventListener("click", () => {
 				user.updateCardCompleted(currentCardId, newCompleted);
 			}
 			// Make a PUT request to update the card on the server
-			fetch(`http://localhost:5500/cards/${currentCardId}`, {
-				method: "PUT",
-				body: JSON.stringify({
-					id: currentCardId,
-					title: newTitle,
-					userId: currentUserId,
-					completed: newCompleted,
-				}),
-				headers: {
-					"Content-Type": "application/json; charset=UTF-8",
-				},
-			})
+			fetch(
+				`https://cardsapi.netlify.app/.netlify/functions/api/${currentCardId}`,
+				{
+					method: "PUT",
+					body: JSON.stringify({
+						id: currentCardId,
+						title: newTitle,
+						userId: currentUserId,
+						completed: newCompleted,
+					}),
+					headers: {
+						"Content-Type": "application/json; charset=UTF-8",
+					},
+				}
+			)
 				.then((response) => response.json())
 				.then((json) => console.log("Card updated:", json))
 				.catch((error) => console.error("Error updating card:", error));
