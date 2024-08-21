@@ -1,8 +1,10 @@
 let users = []; // Array to store user objects
 let currentCardId = null; // To store the ID of the card being edited or deleted
 let currentUserId = null; // To store the ID of the user for the current operation
+let currentUser = null;
 var reservedIDs = [];
-
+var allCards = []; // Store all cards for search purposes
+var suggestions = [];
 function loadUserData() {
 	fetch("https://cardsapi.netlify.app/.netlify/functions/api")
 		.then((response) => response.json())
@@ -24,6 +26,9 @@ function loadUserData() {
 			});
 		})
 		.catch((error) => console.error("Error loading user data:", error));
+
+	const search = document.getElementById("searchBar");
+	search.type = "number";
 }
 
 // Function to add a user
@@ -125,6 +130,7 @@ class User {
 			reservedIDs.push(id);
 
 			const cardContainer = document.createElement("div");
+			cardContainer.title = "USER ID:" + userId;
 			cardContainer.className = "card";
 			cardContainer.id = `card-${this.userId}-${id}`;
 
@@ -175,6 +181,7 @@ class User {
 			document
 				.getElementById(`cont-${this.userId}`)
 				.appendChild(cardContainer);
+			allCards.push(cardContainer);
 		} else {
 			console.log(`Card with ID ${id} already exists.`);
 		}
@@ -233,7 +240,9 @@ document.body.addEventListener("click", (event) => {
 		const userId = buttonId.split("-")[1]; // Extract userId from the button ID
 		clearCards();
 		const userContainer = document.getElementById(`cont-${userId}`);
-
+		const user = findUserById(userId);
+		currentUser = user;
+		showCards();
 		if (userContainer) {
 			userContainer.classList.add("show");
 		}
@@ -265,7 +274,11 @@ document.body.addEventListener("click", (event) => {
 		}
 	}
 });
-
+function showCards() {
+	allCards.forEach((card) => {
+		card.classList.remove("hidden");
+	});
+}
 // Form submission for adding a new card
 document.getElementById("doneBtn").addEventListener("click", () => {
 	const titleInputElement = document.getElementById("titleInput");
@@ -422,11 +435,127 @@ document.getElementById("closeFormBtn").addEventListener("click", () => {
 // Clear button event
 const clearBtn = document.getElementById("clear");
 
-clearBtn.addEventListener("click", clearCards);
+clearBtn.addEventListener("click", () => {
+	clearCards();
+	currentUser = null;
+});
 
 function clearCards() {
 	const allUserContainers = document.querySelectorAll(".container");
 	allUserContainers.forEach((container) => {
 		container.classList.remove("show");
 	});
+
+	// Clear the search results
+	const searchResultsContainer = document.getElementById("searchResults");
+	searchResultsContainer.classList.remove("show");
+	const searchData = document.getElementById("searchData");
 }
+var filteredCards = [];
+document.getElementById("searchBtn").addEventListener("click", () => {
+	currentUser = null;
+	clearCards();
+	filteredCards = [];
+	document.getElementById("searchData").innerHTML = "";
+	const searchText = document
+		.getElementById("searchBar")
+		.value.trim()
+		.toLowerCase();
+	const dataType = document.getElementById("dataType").value;
+
+	filteredCards = allCards.filter((card) => {
+		const cardTitle = card.querySelector(".para")?.value.toLowerCase();
+		const cardId = card.id.split("-").pop();
+
+		if (dataType === "text") {
+			return cardTitle && cardTitle.includes(searchText);
+		} else if (dataType === "number") {
+			return cardId && cardId.includes(searchText);
+		} else {
+			return false;
+		}
+	});
+
+	updateSearchData(filteredCards);
+});
+
+function updateSearchData(cards) {
+	// Hide all cards
+	allCards.forEach((card) => card.classList.add("hidden"));
+
+	// Get all containers and hide them initially
+	const allUserContainers = document.querySelectorAll(".container");
+	allUserContainers.forEach((container) =>
+		container.classList.remove("show")
+	);
+
+	if (cards.length === 0) {
+		// Show the "not found" message if no cards match
+		const searchResultsContainer = document.getElementById("searchResults");
+		searchResultsContainer.classList.add("show");
+		const notFound = document.getElementById("notFound");
+		notFound.classList.add("show");
+	} else {
+		const containerSet = new Set();
+
+		cards.forEach((card) => {
+			card.classList.remove("hidden");
+
+			// Get the user container for the card and ensure it's shown
+			const cardId = card.id.split("-").pop(); // Extract card ID
+			const userId = card.id.split("-")[1]; // Extract user ID
+			const userContainer = document.getElementById(`cont-${userId}`);
+
+			if (userContainer) {
+				userContainer.classList.add("show");
+			}
+
+			// Keep track of shown containers
+			containerSet.add(userContainer);
+		});
+
+		// Show the main cards container
+		const cardsContainer = document.getElementById("cards-container");
+		cardsContainer.classList.add("show");
+
+		// Ensure that all user containers are displayed
+		containerSet.forEach((container) => container.classList.add("show"));
+	}
+}
+
+const selectType = document.getElementById("dataType");
+selectType.addEventListener("change", (event) => {
+	const value = event.target.value;
+	const search = document.getElementById("searchBar");
+	search.type = value;
+	search.value = "";
+});
+const selectCompleted = document.getElementById("filterCompleted");
+
+selectCompleted.addEventListener("change", (event) => {
+	const value = event.target.value;
+
+	let filteredByCompletion;
+	switch (value) {
+		case "true":
+			filteredByCompletion = filteredCards.filter((card) => {
+				const checkbox = card.querySelector("input[type='checkbox']");
+				return checkbox && checkbox.checked === true;
+			});
+			break;
+		case "false":
+			filteredByCompletion = filteredCards.filter((card) => {
+				const checkbox = card.querySelector("input[type='checkbox']");
+				return checkbox && checkbox.checked === false;
+			});
+			break;
+		case "both":
+			filteredByCompletion = filteredCards;
+			break;
+		default:
+			filteredByCompletion = [];
+			break;
+	}
+
+	updateSearchData(filteredByCompletion);
+});

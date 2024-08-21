@@ -8,12 +8,46 @@
 		<link rel="stylesheet" href="users.css" />
 		<link rel="stylesheet" href="cards.css" />
 		<script src="cards.js" defer></script>
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link
+			href="https://fonts.googleapis.com/css2?family=New+Amsterdam&display=swap"
+			rel="stylesheet"
+		/>
 	</head>
 	<body>
 		<div id="users-container" class="users-container">
 			<div id="mainBtns">
 				<img src="assets/clear.png" id="clear" title="clear Cards" />
 			</div>
+		</div>
+
+		<div id="search">
+			<div id="searchAndSuggestions">
+				<div id="searchBarContainer">
+					<input placeholder="Search for a card" id="searchBar" />
+					<div id="searchBtn"><img src="assets/search.png" /></div>
+				</div>
+				<div id="suggestions">
+					<ul id="list"></ul>
+				</div>
+			</div>
+			<label for="dataType" style="margin-top: 3px">search by:</label>
+			<select id="dataType">
+				<option value="text">Title</option>
+				<option value="number" selected>ID</option>
+			</select>
+			<label for="filterCompleted" style="margin-top: 3px"
+				>completed:</label
+			>
+			<select id="filterCompleted">
+				<option value="true">completed</option>
+				<option value="false">not completed</option>
+				<option value="both" selected>Both</option>
+			</select>
+		</div>
+		<div id="searchResults">
+			<h4 id="notFound">We couldn't find any cards that match.</h4>
 		</div>
 		<div id="cards-container"></div>
 
