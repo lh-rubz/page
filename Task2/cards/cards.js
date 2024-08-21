@@ -288,7 +288,7 @@ document.getElementById("doneBtn").addEventListener("click", () => {
 		user.addCard(id, currentUserId, title, completed);
 		// POST request to add the card on the server
 		fetch(
-			`https://cardsapi.netlify.app/.netlify/functions/api/${currentUserId}`,
+			`https://cardsapi.netlify.app/.netlify/functions/api//cards/user/${currentUserId}`,
 			{
 				method: "POST",
 				body: JSON.stringify({
@@ -326,7 +326,7 @@ document.getElementById("confirmDeleteBtn").addEventListener("click", () => {
 	if (user) {
 		user.removeCardById(currentCardId);
 		fetch(
-			`https://cardsapi.netlify.app/.netlify/functions/api/${currentCardId}`,
+			`https://cardsapi.netlify.app/.netlify/functions/api/cards/${currentCardId}`,
 			{
 				method: "DELETE",
 			}
@@ -383,7 +383,7 @@ document.getElementById("confirmUpdateBtn").addEventListener("click", () => {
 			}
 			// Make a PUT request to update the card on the server
 			fetch(
-				`https://cardsapi.netlify.app/.netlify/functions/api/${currentCardId}`,
+				`https://cardsapi.netlify.app/.netlify/functions/api//cards/${currentCardId}`,
 				{
 					method: "PUT",
 					body: JSON.stringify({
