@@ -1,3 +1,5 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
+
 :root {
 	--lightPink: #ff759f;
 	--darkPink: #e75480;
@@ -15,7 +17,7 @@ body {
 }
 #notFound {
 	display: none;
-	font-family: "New Amsterdam", sans-serif;
+	font-family: "Poppins", sans-serif;
 	color: white;
 	letter-spacing: 1.5px;
 	text-align: center;
@@ -24,8 +26,7 @@ body {
 #notFound.show {
 	display: block;
 }
-.container,
-#searchResults {
+.container {
 	display: none;
 	flex-wrap: wrap;
 	justify-content: flex-start;
@@ -34,23 +35,11 @@ body {
 	position: relative;
 	margin: 20px;
 }
-card.hidden {
-	display: none;
-}
-#searchData {
-	height: auto;
-	width: auto;
-	display: flex;
-	flex-wrap: wrap;
-	justify-content: center;
-	align-items: center;
-}
-.container.show,
-#searchResults.show {
+
+.container.show {
 	display: flex;
 }
-.container::before,
-#searchResults:before {
+.container::before {
 	content: "";
 	position: absolute;
 	background-color: rgb(58, 57, 57);
@@ -69,10 +58,13 @@ card.hidden {
 	min-height: 40px;
 }
 #search * {
-	font-family: "New Amsterdam", sans-serif;
+	font-family: "Poppins", sans-serif;
 	letter-spacing: 0.7px;
-	color: white;
+
 	margin: 0px 5px;
+}
+#search .labels {
+	color: white;
 }
 #searchBarContainer {
 	display: flex;
@@ -126,10 +118,8 @@ card.hidden {
 	max-width: 45%;
 	min-width: 275px;
 }
-#dataType *,
-#dataType,
-#filterCompleted,
-#filterCompleted * {
+.filters,
+.filers * {
 	color: grey;
 }
 .card {
@@ -145,7 +135,25 @@ card.hidden {
 	line-height: 1.5;
 	transition: all 0.48s;
 }
-
+#searchBarContainer:focus-within #searchBtn {
+	animation: movingBtn 0.8s;
+}
+@keyframes movingBtn {
+	from {
+		transform: translate(-1300%, -62%);
+	}
+	to {
+		transform: translate(0, -62%);
+	}
+}
+#optionsList {
+	display: none;
+	position: absolute;
+	z-index: 1000;
+	width: 100%;
+	max-height: 100px;
+	overflow-y: auto;
+}
 .content {
 	display: flex;
 	flex-direction: column;

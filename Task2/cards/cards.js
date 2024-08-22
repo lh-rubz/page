@@ -4,7 +4,7 @@ let currentUserId = null; // To store the ID of the user for the current operati
 let currentUser = null;
 var reservedIDs = [];
 var allCards = []; // Store all cards for search purposes
-var suggestions = [];
+
 function loadUserData() {
 	fetch("https://cardsapi.netlify.app/.netlify/functions/api")
 		.then((response) => response.json())
@@ -50,7 +50,7 @@ function addUser(userId) {
 	// Create image container
 	const imgContainer = document.createElement("div");
 	imgContainer.className = "userImg";
-	const randomImage = Math.ceil(Math.random() * 6); // Ensure this matches your image file naming convention
+	const randomImage = Math.ceil(Math.random() * 6);
 	imgContainer.style.backgroundImage = `url("assets/pfp-${randomImage}.png")`;
 	userCard.appendChild(imgContainer);
 
@@ -65,6 +65,7 @@ function addUser(userId) {
 	link.appendChild(viewCardsB);
 	link.href = "#cards-container";
 	userTxt.appendChild(link);
+
 	userCard.appendChild(userTxt);
 
 	// Create container for cards
@@ -121,6 +122,7 @@ class User {
 	constructor(userId) {
 		this.userId = userId;
 		this.userCards = [];
+		this.htmlCards = [];
 	}
 
 	addCard(id, userId, title, completed = false) {
@@ -130,6 +132,7 @@ class User {
 			reservedIDs.push(id);
 
 			const cardContainer = document.createElement("div");
+			this.htmlCards.push(cardContainer);
 			cardContainer.title = "USER ID:" + userId;
 			cardContainer.className = "card";
 			cardContainer.id = `card-${this.userId}-${id}`;
@@ -239,6 +242,12 @@ document.body.addEventListener("click", (event) => {
 		const buttonId = event.target.id;
 		const userId = buttonId.split("-")[1]; // Extract userId from the button ID
 		clearCards();
+		const dataChooser = document.getElementById("dataType");
+		const completedChooser = document.getElementById("filterCompleted");
+		const searchBar = document.getElementById("searchBar");
+		searchBar.value = "";
+		dataChooser.value = "number";
+		completedChooser.value = "both";
 		const userContainer = document.getElementById(`cont-${userId}`);
 		const user = findUserById(userId);
 		currentUser = user;
@@ -437,6 +446,13 @@ const clearBtn = document.getElementById("clear");
 
 clearBtn.addEventListener("click", () => {
 	clearCards();
+	const dataChooser = document.getElementById("dataType");
+	const completedChooser = document.getElementById("filterCompleted");
+	const searchBar = document.getElementById("searchBar");
+	dataChooser.value = "number";
+	updateSuggestions();
+	completedChooser.value = "both";
+	searchBar = "";
 	currentUser = null;
 });
 
@@ -453,17 +469,44 @@ function clearCards() {
 }
 var filteredCards = [];
 document.getElementById("searchBtn").addEventListener("click", () => {
-	currentUser = null;
+	search();
+});
+function search() {
 	clearCards();
 	filteredCards = [];
-	document.getElementById("searchData").innerHTML = "";
+
 	const searchText = document
 		.getElementById("searchBar")
 		.value.trim()
 		.toLowerCase();
-	const dataType = document.getElementById("dataType").value;
 
-	filteredCards = allCards.filter((card) => {
+	const dataType = document.getElementById("dataType").value;
+	const usersFilter = document.getElementById("filterUsers").value;
+	const completedFilter = document.getElementById("filterCompleted").value;
+
+	let getCards = allCards;
+	document.getElementById("filterUsers").setCustomValidity("");
+	if (usersFilter === "current" && currentUser === null) {
+		document
+			.getElementById("filterUsers")
+			.setCustomValidity("Please choose a user first");
+		document.getElementById("filterUsers").reportValidity();
+		return;
+	}
+	if (usersFilter === "current" && currentUser !== null) {
+		getCards = currentUser.htmlCards;
+	}
+
+	// Filter based on completed status
+	if (completedFilter !== "both") {
+		const isCompleted = completedFilter === "true";
+		getCards = getCards.filter((card) => {
+			const checkbox = card.querySelector("input[type='checkbox']");
+			return checkbox && checkbox.checked === isCompleted;
+		});
+	}
+
+	filteredCards = getCards.filter((card) => {
 		const cardTitle = card.querySelector(".para")?.value.toLowerCase();
 		const cardId = card.id.split("-").pop();
 
@@ -477,13 +520,14 @@ document.getElementById("searchBtn").addEventListener("click", () => {
 	});
 
 	updateSearchData(filteredCards);
-});
+}
 
 function updateSearchData(cards) {
-	// Hide all cards
 	allCards.forEach((card) => card.classList.add("hidden"));
-
-	// Get all containers and hide them initially
+	const searchResultsContainer = document.getElementById("searchResults");
+	searchResultsContainer.classList.remove("show");
+	const notFound = document.getElementById("notFound");
+	notFound.classList.remove("show");
 	const allUserContainers = document.querySelectorAll(".container");
 	allUserContainers.forEach((container) =>
 		container.classList.remove("show")
@@ -491,9 +535,9 @@ function updateSearchData(cards) {
 
 	if (cards.length === 0) {
 		// Show the "not found" message if no cards match
-		const searchResultsContainer = document.getElementById("searchResults");
+
 		searchResultsContainer.classList.add("show");
-		const notFound = document.getElementById("notFound");
+
 		notFound.classList.add("show");
 	} else {
 		const containerSet = new Set();
@@ -534,28 +578,47 @@ const selectCompleted = document.getElementById("filterCompleted");
 
 selectCompleted.addEventListener("change", (event) => {
 	const value = event.target.value;
+	search();
+});
 
-	let filteredByCompletion;
-	switch (value) {
-		case "true":
-			filteredByCompletion = filteredCards.filter((card) => {
-				const checkbox = card.querySelector("input[type='checkbox']");
-				return checkbox && checkbox.checked === true;
-			});
-			break;
-		case "false":
-			filteredByCompletion = filteredCards.filter((card) => {
-				const checkbox = card.querySelector("input[type='checkbox']");
-				return checkbox && checkbox.checked === false;
-			});
-			break;
-		case "both":
-			filteredByCompletion = filteredCards;
-			break;
-		default:
-			filteredByCompletion = [];
-			break;
+//for suggestions
+
+function updateSuggestions() {
+	const datalist = document.getElementById("optionsList");
+	datalist.innerHTML = ""; // Clear existing options
+
+	const dataType = document.getElementById("dataType").value;
+	const usersFilter = document.getElementById("filterUsers").value;
+	// Use a Set to track unique values
+	const uniqueValues = new Set();
+
+	let getCards = allCards;
+	if (usersFilter === "current" && currentUser !== null) {
+		getCards = currentUser.htmlCards;
+	} else if (usersFilter === "current" && currentUser === null) {
+		getCards = [];
 	}
 
-	updateSearchData(filteredByCompletion);
-});
+	getCards.forEach((card) => {
+		const option = document.createElement("option");
+
+		let value;
+		if (dataType === "text") {
+			// Extract the title from the card's text area
+			const titleElement = card.querySelector(".para");
+			if (titleElement) {
+				value = titleElement.value.trim();
+			}
+		} else if (dataType === "number") {
+			const cardId = card.id.split("-").pop(); // card ID is the last part of the ID attribute
+			value = cardId;
+		}
+
+		// Only add option if value is not already in the Set
+		if (value && !uniqueValues.has(value)) {
+			uniqueValues.add(value);
+			option.value = value;
+			datalist.appendChild(option);
+		}
+	});
+}
