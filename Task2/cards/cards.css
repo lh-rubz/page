@@ -30,8 +30,22 @@ body {
 
 	padding: 10px 20px;
 	border-radius: 8px;
-
+	transition: text-shadow 0.48s;
 	margin: 10px;
+}
+#projectTitle:hover {
+	text-shadow: 4px 4px 8px rgba(255, 255, 255, 0.6);
+}
+#projectTitle:hover .logo-sub {
+	opacity: 1;
+}
+.logo-sub {
+	font-family: "Poppins", sans-serif;
+	font-size: 18px;
+	color: white;
+	text-wrap: nowrap;
+	opacity: 0;
+	transition: opacity 0.4s;
 }
 
 .logo-main {
@@ -146,6 +160,7 @@ body {
 	flex-direction: column;
 	justify-content: center;
 	align-items: center;
+	transform: translateY(12%);
 }
 
 #optionsList {

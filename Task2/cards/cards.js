@@ -4,6 +4,7 @@ let currentUserId = null; // To store the ID of the user for the current operati
 let currentUser = null;
 var reservedIDs = [];
 var allCards = []; // Store all cards for search purposes
+var searching;
 
 function loadUserData() {
 	fetch("https://cardsapi.netlify.app/.netlify/functions/api")
@@ -31,31 +32,29 @@ function loadUserData() {
 }
 
 // Function to add a user
-function addUser(userId) {
-	if (findUserById(userId)) {
-		return;
-	}
-
-	const newUser = new User(userId);
-	users.push(newUser);
-
-	// Create user card container
-	const userCardContainer = document.getElementById("users-container");
+function createUserCard(userId) {
 	const userCard = document.createElement("div");
 	userCard.className = "userCard";
-	userCard.id = `userCard-${newUser.userId}`;
-	userCardContainer.appendChild(userCard);
+	userCard.id = `userCard-${userId}`;
+	return userCard;
+}
 
-	// Create image container
+function createImageContainer(userId) {
 	const imgContainer = document.createElement("div");
 	imgContainer.className = "userImg";
 	const randomImage = Math.ceil(Math.random() * 6);
 	imgContainer.style.backgroundImage = `url("assets/pfp-${randomImage}.png")`;
-	userCard.appendChild(imgContainer);
+	return imgContainer;
+}
 
-	// Create text container
+function createTextContainer(userId) {
 	const userTxt = document.createElement("div");
 	userTxt.className = "userTxt";
+
+	const userIDtitle = document.createElement("h5");
+	userIDtitle.innerHTML = "User ID: " + userId;
+	userTxt.appendChild(userIDtitle);
+
 	const link = document.createElement("a");
 	const viewCardsB = document.createElement("button");
 	viewCardsB.textContent = "View Cards";
@@ -63,32 +62,63 @@ function addUser(userId) {
 	viewCardsB.id = `view-${userId}`;
 	link.appendChild(viewCardsB);
 	link.href = "#cards-container";
-	const userIDtitle = document.createElement("h5");
-	userIDtitle.innerHTML = "User ID:" + userId;
-	userTxt.appendChild(userIDtitle);
+
 	userTxt.appendChild(link);
 
-	userCard.appendChild(userTxt);
+	return userTxt;
+}
 
-	// Create container for cards
-	const cardsContainer = document.getElementById("cards-container");
+function createUserContainer(userId) {
 	const userContainer = document.createElement("div");
 	userContainer.className = "container";
-	userContainer.id = `cont-${newUser.userId}`;
-	cardsContainer.appendChild(userContainer);
+	userContainer.id = `cont-${userId}`;
+	return userContainer;
+}
 
+function createAddButton(userId) {
 	const btnContainer = document.createElement("div");
-	const addBtn = document.createElement("div");
 	btnContainer.className = "outer button-container";
+
+	const addBtn = document.createElement("div");
 	addBtn.className = "buttons";
-	addBtn.id = `addCard-${newUser.userId}`;
+	addBtn.id = `addCard-${userId}`;
 	addBtn.style.backgroundImage = "url(assets/add_darkPink.png)";
 	addBtn.title = "Add Card";
+
 	const userIdLabel = document.createElement("h4");
 	userIdLabel.innerHTML = "User ID: " + userId;
+
 	btnContainer.appendChild(userIdLabel);
 	btnContainer.appendChild(addBtn);
-	userContainer.appendChild(btnContainer);
+
+	return btnContainer;
+}
+
+function addUser(userId) {
+	const newUser = new User(userId);
+	users.push(newUser);
+
+	// Create and append user card
+	const userCard = createUserCard(userId);
+	const userCardContainer = document.getElementById("users-container");
+	userCardContainer.appendChild(userCard);
+
+	// Create and append image container
+	const imgContainer = createImageContainer(userId);
+	userCard.appendChild(imgContainer);
+
+	// Create and append text container
+	const userTxt = createTextContainer(userId);
+	userCard.appendChild(userTxt);
+
+	// Create and append user container for cards
+	const userContainer = createUserContainer(userId);
+	const cardsContainer = document.getElementById("cards-container");
+	cardsContainer.appendChild(userContainer);
+
+	// Create and append add button
+	const addBtnContainer = createAddButton(userId);
+	userContainer.appendChild(addBtnContainer);
 }
 
 // Function to find a user by ID
@@ -118,10 +148,7 @@ class Card {
 		this.completed = newCompletedStatus;
 	}
 }
-function isCardIdTaken(cardId) {
-	const card = reservedIDs.find((x) => x == cardId);
-	return card !== undefined && card !== null;
-}
+
 class User {
 	//each user has several cards
 	constructor(userId) {
@@ -131,68 +158,79 @@ class User {
 	}
 
 	addCard(id, userId, title, completed = false) {
-		if (!isCardIdTaken(id)) {
-			const card = new Card(id, userId, title, completed);
-			this.userCards.push(card);
-			reservedIDs.push(id);
+		const card = new Card(id, userId, title, completed);
+		this.userCards.push(card);
+		reservedIDs.push(id);
 
-			const cardContainer = document.createElement("div");
-			this.htmlCards.push(cardContainer);
-			cardContainer.title = "USER ID:" + userId;
-			cardContainer.className = "card";
-			cardContainer.id = `card-${this.userId}-${id}`;
+		const cardContainer = this.createCardContainer(id, userId);
+		const contentDiv = this.createContentDiv(id, userId, title, completed);
 
-			const contentDiv = document.createElement("div");
-			contentDiv.className = "content";
+		cardContainer.appendChild(contentDiv);
+		document
+			.getElementById(`cont-${this.userId}`)
+			.appendChild(cardContainer);
+		allCards.push(cardContainer);
+	}
 
-			const titleElement = document.createElement("h3");
-			titleElement.innerText = `Card ID: ${id}`;
+	createCardContainer(id, userId) {
+		const cardContainer = document.createElement("div");
+		this.htmlCards.push(cardContainer);
+		cardContainer.title = "USER ID:" + userId;
+		cardContainer.className = "card";
+		cardContainer.id = `card-${userId}-${id}`;
+		return cardContainer;
+	}
 
-			const textarea = document.createElement("textarea");
-			textarea.className = "para";
-			textarea.id = `textarea-${this.userId}-${id}`;
-			textarea.value = title;
-			textarea.readOnly = true;
+	createContentDiv(id, userId, title, completed) {
+		const contentDiv = document.createElement("div");
+		contentDiv.className = "content";
 
-			const checkbox = document.createElement("input");
-			checkbox.type = "checkbox";
-			checkbox.id = `ischecked-${this.userId}-${id}`;
-			checkbox.checked = completed;
-			checkbox.disabled = true;
+		const titleElement = document.createElement("h3");
+		titleElement.innerText = `Card ID: ${id}`;
 
-			const editButton = document.createElement("div");
-			editButton.className = "buttons";
-			editButton.id = `edit-${this.userId}-${id}`;
-			editButton.style.backgroundImage = "url('assets/edit_dark.png')";
-			editButton.title = "Edit";
+		const textarea = document.createElement("textarea");
+		textarea.className = "para";
+		textarea.id = `textarea-${userId}-${id}`;
+		textarea.value = title;
+		textarea.readOnly = true;
 
-			const deleteButton = document.createElement("div");
-			deleteButton.className = "buttons";
-			deleteButton.id = `delete-${this.userId}-${id}`;
-			deleteButton.style.backgroundImage =
-				"url('assets/delete_dark.png')";
-			deleteButton.title = "Delete Card";
+		const checkbox = document.createElement("input");
+		checkbox.type = "checkbox";
+		checkbox.id = `ischecked-${userId}-${id}`;
+		checkbox.checked = completed;
+		checkbox.disabled = true;
 
-			const buttonContainer = document.createElement("div");
-			buttonContainer.className = "inner button-container";
-			buttonContainer.appendChild(editButton);
-			buttonContainer.appendChild(deleteButton);
+		const buttonContainer = this.createButtonContainer(id, userId);
 
-			contentDiv.appendChild(titleElement);
-			contentDiv.appendChild(textarea);
-			contentDiv.appendChild(document.createTextNode("Completed: "));
-			contentDiv.appendChild(checkbox);
-			contentDiv.appendChild(buttonContainer);
+		contentDiv.appendChild(titleElement);
+		contentDiv.appendChild(textarea);
+		contentDiv.appendChild(document.createTextNode("Completed: "));
+		contentDiv.appendChild(checkbox);
+		contentDiv.appendChild(buttonContainer);
 
-			cardContainer.appendChild(contentDiv);
+		return contentDiv;
+	}
 
-			document
-				.getElementById(`cont-${this.userId}`)
-				.appendChild(cardContainer);
-			allCards.push(cardContainer);
-		} else {
-			console.log(`Card with ID ${id} already exists.`);
-		}
+	createButtonContainer(id, userId) {
+		const buttonContainer = document.createElement("div");
+		buttonContainer.className = "inner button-container";
+
+		const editButton = document.createElement("div");
+		editButton.className = "buttons";
+		editButton.id = `edit-${userId}-${id}`;
+		editButton.style.backgroundImage = "url('assets/edit_dark.png')";
+		editButton.title = "Edit";
+
+		const deleteButton = document.createElement("div");
+		deleteButton.className = "buttons";
+		deleteButton.id = `delete-${userId}-${id}`;
+		deleteButton.style.backgroundImage = "url('assets/delete_dark.png')";
+		deleteButton.title = "Delete Card";
+
+		buttonContainer.appendChild(editButton);
+		buttonContainer.appendChild(deleteButton);
+
+		return buttonContainer;
 	}
 
 	getCardById(cardId) {
@@ -208,6 +246,22 @@ class User {
 		);
 		if (cardElement) {
 			cardElement.remove();
+		}
+
+		this.updateUserContainer();
+	}
+
+	updateUserContainer() {
+		if (searching === true) {
+			const userContainer = document.getElementById(
+				`cont-${this.userId}`
+			);
+			const childElementsWithShowClass =
+				userContainer.querySelectorAll(":scope > .show");
+
+			if (childElementsWithShowClass.length === 0) {
+				userContainer.classList.remove("show");
+			}
 		}
 	}
 
@@ -245,6 +299,7 @@ document.body.addEventListener("click", (event) => {
 	if (event.target.classList.contains("viewCardsButton")) {
 		// Extract userId from the button ID
 		document.getElementById("notFound").classList.remove("show");
+		searching = false;
 		const buttonId = event.target.id;
 		const userId = buttonId.split("-")[1]; // Extract userId from the button ID
 		clearCards();
@@ -452,6 +507,7 @@ const clearBtn = document.getElementById("clear");
 
 clearBtn.addEventListener("click", () => {
 	clearCards();
+	searching = false;
 	const dataChooser = document.getElementById("dataType");
 	const completedChooser = document.getElementById("filterCompleted");
 	const searchBar = document.getElementById("searchBar");
@@ -493,6 +549,7 @@ document.getElementById("searchBtn").addEventListener("click", () => {
 	search();
 });
 function search() {
+	searching = true;
 	clearCards();
 	filteredCards = [];
 
