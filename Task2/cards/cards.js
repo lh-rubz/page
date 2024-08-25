@@ -28,7 +28,6 @@ function loadUserData() {
 		.catch((error) => console.error("Error loading user data:", error));
 
 	const search = document.getElementById("searchBar");
-	search.type = "number";
 }
 
 // Function to add a user
@@ -64,6 +63,9 @@ function addUser(userId) {
 	viewCardsB.id = `view-${userId}`;
 	link.appendChild(viewCardsB);
 	link.href = "#cards-container";
+	const userIDtitle = document.createElement("h5");
+	userIDtitle.innerHTML = "User ID:" + userId;
+	userTxt.appendChild(userIDtitle);
 	userTxt.appendChild(link);
 
 	userCard.appendChild(userTxt);
@@ -82,6 +84,9 @@ function addUser(userId) {
 	addBtn.id = `addCard-${newUser.userId}`;
 	addBtn.style.backgroundImage = "url(assets/add_darkPink.png)";
 	addBtn.title = "Add Card";
+	const userIdLabel = document.createElement("h4");
+	userIdLabel.innerHTML = "User ID: " + userId;
+	btnContainer.appendChild(userIdLabel);
 	btnContainer.appendChild(addBtn);
 	userContainer.appendChild(btnContainer);
 }
@@ -239,6 +244,7 @@ document.body.addEventListener("click", (event) => {
 	// Handle "viewCardsButton" click
 	if (event.target.classList.contains("viewCardsButton")) {
 		// Extract userId from the button ID
+		document.getElementById("notFound").classList.remove("show");
 		const buttonId = event.target.id;
 		const userId = buttonId.split("-")[1]; // Extract userId from the button ID
 		clearCards();
@@ -452,7 +458,7 @@ clearBtn.addEventListener("click", () => {
 	dataChooser.value = "number";
 	updateSuggestions();
 	completedChooser.value = "both";
-	searchBar = "";
+	searchBar.value = "";
 	currentUser = null;
 });
 
@@ -469,6 +475,21 @@ function clearCards() {
 }
 var filteredCards = [];
 document.getElementById("searchBtn").addEventListener("click", () => {
+	const searchBar = document.getElementById("searchBar");
+	const searchText = searchBar.value.trim().toLowerCase();
+	const dataType = document.getElementById("dataType").value;
+
+	// Check if the dataType is "number" and validate the input
+	if (dataType === "number" && searchText) {
+		const parsedSearchText = parseInt(searchText, 10);
+		if (isNaN(parsedSearchText) || searchText === "") {
+			searchBar.setCustomValidity("Please enter a valid number.");
+			searchBar.reportValidity();
+			return;
+		} else {
+			searchBar.setCustomValidity(""); // Clear any previous custom validity
+		}
+	}
 	search();
 });
 function search() {
@@ -486,14 +507,14 @@ function search() {
 
 	let getCards = allCards;
 	document.getElementById("filterUsers").setCustomValidity("");
+	//if the user chose current and he didn't view any cards yet show the validity
 	if (usersFilter === "current" && currentUser === null) {
 		document
 			.getElementById("filterUsers")
 			.setCustomValidity("Please choose a user first");
 		document.getElementById("filterUsers").reportValidity();
 		return;
-	}
-	if (usersFilter === "current" && currentUser !== null) {
+	} else if (usersFilter === "current" && currentUser !== null) {
 		getCards = currentUser.htmlCards;
 	}
 
@@ -507,7 +528,7 @@ function search() {
 	}
 
 	filteredCards = getCards.filter((card) => {
-		const cardTitle = card.querySelector(".para")?.value.toLowerCase();
+		const cardTitle = card.querySelector(".para").value.toLowerCase();
 		const cardId = card.id.split("-").pop();
 
 		if (dataType === "text") {
@@ -540,8 +561,6 @@ function updateSearchData(cards) {
 
 		notFound.classList.add("show");
 	} else {
-		const containerSet = new Set();
-
 		cards.forEach((card) => {
 			card.classList.remove("hidden");
 
@@ -553,31 +572,17 @@ function updateSearchData(cards) {
 			if (userContainer) {
 				userContainer.classList.add("show");
 			}
-
-			// Keep track of shown containers
-			containerSet.add(userContainer);
 		});
 
 		// Show the main cards container
 		const cardsContainer = document.getElementById("cards-container");
 		cardsContainer.classList.add("show");
-
-		// Ensure that all user containers are displayed
-		containerSet.forEach((container) => container.classList.add("show"));
 	}
 }
 
-const selectType = document.getElementById("dataType");
-selectType.addEventListener("change", (event) => {
-	const value = event.target.value;
-	const search = document.getElementById("searchBar");
-	search.type = value;
-	search.value = "";
-});
 const selectCompleted = document.getElementById("filterCompleted");
 
 selectCompleted.addEventListener("change", (event) => {
-	const value = event.target.value;
 	search();
 });
 
@@ -589,6 +594,7 @@ function updateSuggestions() {
 
 	const dataType = document.getElementById("dataType").value;
 	const usersFilter = document.getElementById("filterUsers").value;
+	const userInput = document.getElementById("searchBar").value.toLowerCase();
 	// Use a Set to track unique values
 	const uniqueValues = new Set();
 
@@ -600,23 +606,22 @@ function updateSuggestions() {
 	}
 
 	getCards.forEach((card) => {
-		const option = document.createElement("option");
-
 		let value;
 		if (dataType === "text") {
 			// Extract the title from the card's text area
 			const titleElement = card.querySelector(".para");
 			if (titleElement) {
-				value = titleElement.value.trim();
+				value = titleElement.value.trim().toLowerCase();
 			}
 		} else if (dataType === "number") {
 			const cardId = card.id.split("-").pop(); // card ID is the last part of the ID attribute
 			value = cardId;
 		}
 
-		// Only add option if value is not already in the Set
-		if (value && !uniqueValues.has(value)) {
+		// Only add option if value contains userInput and is not already in the Set
+		if (value && value.includes(userInput) && !uniqueValues.has(value)) {
 			uniqueValues.add(value);
+			const option = document.createElement("option");
 			option.value = value;
 			datalist.appendChild(option);
 		}
