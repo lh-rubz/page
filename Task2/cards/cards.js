@@ -5,30 +5,20 @@ let currentUser = null;
 var reservedIDs = [];
 var allCards = []; // Store all cards for search purposes
 var searching;
-
+function clearData() {
+	users = [];
+	currentCardId = null;
+	currentUserId = null;
+	currentUser = null;
+	allCards = [];
+}
 function loadUserData() {
 	fetch("https://cardsapi.netlify.app/.netlify/functions/api")
 		.then((response) => response.json())
 		.then((data) => {
-			data.forEach((cardData) => {
-				let user = findUserById(cardData.userId);
-				if (!user) {
-					addUser(cardData.userId);
-					user = findUserById(cardData.userId);
-				}
-				if (user) {
-					user.addCard(
-						cardData.id,
-						cardData.userId,
-						cardData.title,
-						cardData.completed
-					);
-				}
-			});
+			loadDataFromApi(data);
 		})
 		.catch((error) => console.error("Error loading user data:", error));
-
-	const search = document.getElementById("searchBar");
 }
 
 // Function to add a user
@@ -414,14 +404,34 @@ document.getElementById("confirmDeleteBtn").addEventListener("click", () => {
 				method: "DELETE",
 			}
 		)
-			.then(() => console.log("Card deleted"))
+			.then((data) => {
+				clearData();
+				loadDataFromApi(data);
+			})
 			.catch((error) => console.error("Error deleting card:", error));
 	} else {
 		console.log(`User with ID ${currentUserId} not found.`);
 	}
 	document.getElementById("deletePopup").classList.remove("show");
 });
-
+//this method is used for useing the response and reloading the data
+function loadDataFromApi(data) {
+	data.forEach((cardData) => {
+		let user = findUserById(cardData.userId);
+		if (!user) {
+			addUser(cardData.userId);
+			user = findUserById(cardData.userId);
+		}
+		if (user) {
+			user.addCard(
+				cardData.id,
+				cardData.userId,
+				cardData.title,
+				cardData.completed
+			);
+		}
+	});
+}
 // Cancel deletion
 document.getElementById("cancelDeleteBtn").addEventListener("click", () => {
 	console.log("Canceling deletion.");
@@ -458,12 +468,6 @@ document.getElementById("confirmUpdateBtn").addEventListener("click", () => {
 	if (user) {
 		const card = user.getCardById(currentCardId);
 		if (card) {
-			if (card.title !== newTitle) {
-				user.updateCardTitle(currentCardId, newTitle);
-			}
-			if (card.completed !== newCompleted) {
-				user.updateCardCompleted(currentCardId, newCompleted);
-			}
 			// Make a PUT request to update the card on the server
 			fetch(
 				`https://cardsapi.netlify.app/.netlify/functions/api//cards/${currentCardId}`,
@@ -481,7 +485,14 @@ document.getElementById("confirmUpdateBtn").addEventListener("click", () => {
 				}
 			)
 				.then((response) => response.json())
-				.then((json) => console.log("Card updated:", json))
+				.then((json) => {
+					if (card.title !== newTitle) {
+						user.updateCardTitle(currentCardId, newTitle);
+					}
+					if (card.completed !== newCompleted) {
+						user.updateCardCompleted(currentCardId, newCompleted);
+					}
+				})
 				.catch((error) => console.error("Error updating card:", error));
 		} else {
 			console.log(
@@ -531,72 +542,79 @@ function clearCards() {
 }
 var filteredCards = [];
 document.getElementById("searchBtn").addEventListener("click", () => {
-	const searchBar = document.getElementById("searchBar");
-	const searchText = searchBar.value.trim().toLowerCase();
-	const dataType = document.getElementById("dataType").value;
-
-	// Check if the dataType is "number" and validate the input
-	if (dataType === "number" && searchText) {
-		const parsedSearchText = parseInt(searchText, 10);
-		if (isNaN(parsedSearchText) || searchText === "") {
-			searchBar.setCustomValidity("Please enter a valid number.");
-			searchBar.reportValidity();
-			return;
-		} else {
-			searchBar.setCustomValidity(""); // Clear any previous custom validity
-		}
-	}
 	search();
 });
 function search() {
+	// Start search operation
 	searching = true;
 	clearCards();
 	filteredCards = [];
 
+	// Get and process search input
 	const searchText = document
 		.getElementById("searchBar")
 		.value.trim()
 		.toLowerCase();
-
 	const dataType = document.getElementById("dataType").value;
-	const usersFilter = document.getElementById("filterUsers").value;
-	const completedFilter = document.getElementById("filterCompleted").value;
+	const userFilter = document.getElementById("filterUsers").value;
+	const completionFilter = document.getElementById("filterCompleted").value;
 
-	let getCards = allCards;
+	// Determine the initial set of cards to work with
+	let cardsToFilter = allCards;
 	document.getElementById("filterUsers").setCustomValidity("");
-	//if the user chose current and he didn't view any cards yet show the validity
-	if (usersFilter === "current" && currentUser === null) {
-		document
-			.getElementById("filterUsers")
-			.setCustomValidity("Please choose a user first");
-		document.getElementById("filterUsers").reportValidity();
-		return;
-	} else if (usersFilter === "current" && currentUser !== null) {
-		getCards = currentUser.htmlCards;
+
+	// Validate search input if the data type is "number"
+	if (dataType === "number" && searchText) {
+		// Check if the input is a valid number
+		const isValidNumber = /^\d+$/.test(searchText);
+		if (!isValidNumber) {
+			document
+				.getElementById("searchBar")
+				.setCustomValidity("Please enter a valid number.");
+			document.getElementById("searchBar").reportValidity();
+			return;
+		} else {
+			document.getElementById("searchBar").setCustomValidity(""); // Clear validity message
+		}
 	}
 
-	// Filter based on completed status
-	if (completedFilter !== "both") {
-		const isCompleted = completedFilter === "true";
-		getCards = getCards.filter((card) => {
+	// Validate user filter if set to "current"
+	if (userFilter === "current") {
+		if (currentUser === null) {
+			document
+				.getElementById("filterUsers")
+				.setCustomValidity("Please choose a user first.");
+			document.getElementById("filterUsers").reportValidity();
+			return;
+		} else {
+			cardsToFilter = currentUser.htmlCards;
+		}
+	}
+
+	// Filter based on completion status
+	if (completionFilter !== "both") {
+		const isCompleted = completionFilter === "true";
+		cardsToFilter = cardsToFilter.filter((card) => {
 			const checkbox = card.querySelector("input[type='checkbox']");
 			return checkbox && checkbox.checked === isCompleted;
 		});
 	}
 
-	filteredCards = getCards.filter((card) => {
-		const cardTitle = card.querySelector(".para").value.toLowerCase();
+	// Further filter cards based on search criteria
+	filteredCards = cardsToFilter.filter((card) => {
+		const cardTitle = card.querySelector(".para").textContent.toLowerCase();
 		const cardId = card.id.split("-").pop();
 
 		if (dataType === "text") {
-			return cardTitle && cardTitle.includes(searchText);
+			return cardTitle.includes(searchText);
 		} else if (dataType === "number") {
-			return cardId && cardId.includes(searchText);
+			return cardId.includes(searchText);
 		} else {
 			return false;
 		}
 	});
 
+	// Update the display with the filtered cards
 	updateSearchData(filteredCards);
 }
 
@@ -683,4 +701,10 @@ function updateSuggestions() {
 			datalist.appendChild(option);
 		}
 	});
-}
+} //make the saerch work when the key enter is pressed
+const searchBar = document.getElementById("searchBar");
+searchBar.addEventListener("keydown", (event) => {
+	if (event.key === "Enter") {
+		search();
+	}
+});
