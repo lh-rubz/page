@@ -11,7 +11,10 @@ function clearData() {
 	currentUserId = null;
 	currentUser = null;
 	allCards = [];
+	document.getElementById("users-container").innerHTML = "";
+	document.getElementById("cards-container").innerHTML = "";
 }
+
 function loadUserData() {
 	fetch("https://cardsapi.netlify.app/.netlify/functions/api")
 		.then((response) => response.json())
@@ -407,6 +410,7 @@ document.getElementById("confirmDeleteBtn").addEventListener("click", () => {
 			.then((data) => {
 				clearData();
 				loadDataFromApi(data);
+				window.location.reload();
 			})
 			.catch((error) => console.error("Error deleting card:", error));
 	} else {
@@ -416,6 +420,12 @@ document.getElementById("confirmDeleteBtn").addEventListener("click", () => {
 });
 //this method is used for useing the response and reloading the data
 function loadDataFromApi(data) {
+	console.log("Loading data from API:", data); // Debugging line to check data format
+	if (!Array.isArray(data)) {
+		console.error("Data format is not an array:", data);
+		return;
+	}
+
 	data.forEach((cardData) => {
 		let user = findUserById(cardData.userId);
 		if (!user) {
@@ -432,6 +442,7 @@ function loadDataFromApi(data) {
 		}
 	});
 }
+
 // Cancel deletion
 document.getElementById("cancelDeleteBtn").addEventListener("click", () => {
 	console.log("Canceling deletion.");
@@ -538,34 +549,30 @@ function clearCards() {
 	// Clear the search results
 	const searchResultsContainer = document.getElementById("searchResults");
 	searchResultsContainer.classList.remove("show");
-	const searchData = document.getElementById("searchData");
 }
+
 var filteredCards = [];
 document.getElementById("searchBtn").addEventListener("click", () => {
 	search();
 });
 function search() {
-	// Start search operation
 	searching = true;
 	clearCards();
 	filteredCards = [];
 
-	// Get and process search input
 	const searchText = document
 		.getElementById("searchBar")
 		.value.trim()
 		.toLowerCase();
+
 	const dataType = document.getElementById("dataType").value;
-	const userFilter = document.getElementById("filterUsers").value;
-	const completionFilter = document.getElementById("filterCompleted").value;
+	const usersFilter = document.getElementById("filterUsers").value;
+	const completedFilter = document.getElementById("filterCompleted").value;
 
-	// Determine the initial set of cards to work with
-	let cardsToFilter = allCards;
+	let currentCards = allCards;
 	document.getElementById("filterUsers").setCustomValidity("");
-
-	// Validate search input if the data type is "number"
+	// Check if the dataType is "number" and validate the input
 	if (dataType === "number" && searchText) {
-		// Check if the input is a valid number
 		const isValidNumber = /^\d+$/.test(searchText);
 		if (!isValidNumber) {
 			document
@@ -577,44 +584,39 @@ function search() {
 			document.getElementById("searchBar").setCustomValidity(""); // Clear validity message
 		}
 	}
-
-	// Validate user filter if set to "current"
-	if (userFilter === "current") {
-		if (currentUser === null) {
-			document
-				.getElementById("filterUsers")
-				.setCustomValidity("Please choose a user first.");
-			document.getElementById("filterUsers").reportValidity();
-			return;
-		} else {
-			cardsToFilter = currentUser.htmlCards;
-		}
+	//if the user chose current and he didn't view any cards yet show the validity
+	if (usersFilter === "current" && currentUser === null) {
+		document
+			.getElementById("filterUsers")
+			.setCustomValidity("Please choose a user first");
+		document.getElementById("filterUsers").reportValidity();
+		return;
+	} else if (usersFilter === "current" && currentUser !== null) {
+		currentCards = currentUser.htmlCards;
 	}
 
-	// Filter based on completion status
-	if (completionFilter !== "both") {
-		const isCompleted = completionFilter === "true";
-		cardsToFilter = cardsToFilter.filter((card) => {
+	// Filter based on completed status
+	if (completedFilter !== "both") {
+		const isCompleted = completedFilter === "true";
+		currentCards = currentCards.filter((card) => {
 			const checkbox = card.querySelector("input[type='checkbox']");
 			return checkbox && checkbox.checked === isCompleted;
 		});
 	}
 
-	// Further filter cards based on search criteria
-	filteredCards = cardsToFilter.filter((card) => {
-		const cardTitle = card.querySelector(".para").textContent.toLowerCase();
+	filteredCards = currentCards.filter((card) => {
+		const cardTitle = card.querySelector(".para").value.toLowerCase();
 		const cardId = card.id.split("-").pop();
 
 		if (dataType === "text") {
-			return cardTitle.includes(searchText);
+			return cardTitle && cardTitle.includes(searchText);
 		} else if (dataType === "number") {
-			return cardId.includes(searchText);
+			return cardId && cardId.includes(searchText);
 		} else {
 			return false;
 		}
 	});
 
-	// Update the display with the filtered cards
 	updateSearchData(filteredCards);
 }
 
@@ -673,14 +675,14 @@ function updateSuggestions() {
 	// Use a Set to track unique values
 	const uniqueValues = new Set();
 
-	let getCards = allCards;
+	let currentCards = allCards;
 	if (usersFilter === "current" && currentUser !== null) {
-		getCards = currentUser.htmlCards;
+		currentCards = currentUser.htmlCards;
 	} else if (usersFilter === "current" && currentUser === null) {
-		getCards = [];
+		currentCards = [];
 	}
 
-	getCards.forEach((card) => {
+	currentCards.forEach((card) => {
 		let value;
 		if (dataType === "text") {
 			// Extract the title from the card's text area
