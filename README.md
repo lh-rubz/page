@@ -18,9 +18,6 @@ Welcome to my project! This is a simple web page featuring a list of tasks imple
 
 - **API Usage:** The card management system interacts with an API for performing CRUD (Create, Read, Update, Delete) operations on cards. You can access the full API documentation [here](https://github.com/lh-rubz/Netlify-express). 
 
-### GitHub Repository
-The source code for this project is available on GitHub. You can explore the code, contribute, or use it as a reference:
-[GitHub Repository](https://github.com/lh-rubz/Netlify-express)
 
 ## How to Use
 
