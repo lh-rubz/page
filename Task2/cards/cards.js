@@ -285,7 +285,9 @@ class User {
 }
 
 // Fetch user data when the page loads
-document.addEventListener("DOMContentLoaded", loadUserData);
+document.addEventListener("DOMContentLoaded", () => {
+	loadUserData();
+});
 
 document.body.addEventListener("click", (event) => {
 	// Handle "viewCardsButton" click
@@ -326,6 +328,9 @@ document.body.addEventListener("click", (event) => {
 					document
 						.getElementById("updatePopup")
 						.classList.add("show");
+					document.getElementById("titleInput").focus();
+
+					document.getElementById("updateTA").focus();
 				}
 			}
 		} else if (action === "delete") {
@@ -334,6 +339,7 @@ document.body.addEventListener("click", (event) => {
 			document.getElementById("titleInput").value = ""; // Clear the title input
 			document.getElementById("confirmCheckbox").checked = false; // Uncheck the checkbox
 			document.getElementById("formPopup").classList.add("show");
+			document.getElementById("titleInput").focus();
 		}
 	}
 });

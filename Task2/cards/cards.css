@@ -207,10 +207,10 @@ body {
 
 @keyframes movingBtn {
 	from {
-		transform: translate(-1300%, -62%);
+		transform: translate(-1300%, -50%);
 	}
 	to {
-		transform: translate(0, -62%);
+		transform: translate(0, -50%);
 	}
 }
 
@@ -271,6 +271,8 @@ body {
 	border-radius: 5px;
 	overflow: auto;
 	font-family: "Times New Roman", Times, serif;
+	pointer-events: none;
+	user-select: none;
 }
 
 .card.hidden {
